@@ -10,12 +10,10 @@ import UIKit
 
 class ViewController: UIViewController {
     @IBOutlet weak var signalPath: UIView!
-    
-    var needToLengthenThePath = false
-    
+    var SignalPathLengh: CGFloat = 40
+    var needToStretchThePath = true
     var x: CGFloat = 100
     var y: CGFloat = 100
-    var panCenter = CGPointZero
 
     @IBAction func addBlock(sender: UIButton) {
         addBlock(x, posY: y)
@@ -60,29 +58,50 @@ class ViewController: UIViewController {
     }
     
     func changeBlockPosition(button: UIButton, event: UIEvent){
+        // make block moves
         for touch in event.touchesForView(button)!{
             let previousLocation: CGPoint = touch.previousLocationInView(button)
             let location: CGPoint = touch.locationInView(button)
             let deltaX: CGFloat = location.x - previousLocation.x
             let deltaY: CGFloat = location.y - previousLocation.y
             button.center = CGPointMake(button.center.x + deltaX, button.center.y + deltaY)
-                
-            var totalLenghOfBlocks: CGFloat = 0
-            var signalPathOrigin = CGPoint()
-            for block in self.view.subviews {
-                if block.isKindOfClass(UIButton) && signalPath.frame.contains(button.center) {
-                    totalLenghOfBlocks += block.frame.width
-                    //signalPathOrigin = block
-                }
+            
+            
+            
+            // make signalPath strech
+            if needToStretchThePath == true {
+                SignalPathLengh = getSingalPathLength(button)
+                signalPath.frame = CGRectMake(270, 72, SignalPathLengh, 128)
             }
-
-            signalPath.frame = CGRectMake(270, 72,totalLenghOfBlocks + 60, 128)
-
-
         }
     }
     
-
+    func getSingalPathLength(button: UIButton) -> CGFloat {
+        
+        var totalLenghOfBlocksForFirstPath: CGFloat = 0
+        var totalLenghOfBlocksForSecondPath: CGFloat = 0
+        for block in self.view.subviews {
+            // on first Path
+            if block.isKindOfClass(UIButton) && signalPath.frame.contains(button.center) && block.center.y <= signalPath.frame.origin.y + signalPath.frame.height / 2
+            {
+                totalLenghOfBlocksForFirstPath += block.frame.width
+            }
+                
+            // on the second Path
+            else if block.isKindOfClass(UIButton) && signalPath.frame.contains(button.center) && block.center.y > signalPath.frame.origin.y + signalPath.frame.height / 2
+            {
+                totalLenghOfBlocksForSecondPath += block.frame.width
+            }
+        }
+        
+        var result: CGFloat = 20
+        if totalLenghOfBlocksForFirstPath >= totalLenghOfBlocksForSecondPath {
+            result = totalLenghOfBlocksForFirstPath + 40
+        } else {
+            result = totalLenghOfBlocksForSecondPath + 40
+        }
+        return result
+    }
     
     func deleteBlock(){
         if self.view.subviews.last!.isKindOfClass(UIButton) {
