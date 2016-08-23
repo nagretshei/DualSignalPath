@@ -11,20 +11,26 @@ import UIKit
 class ViewController: UIViewController {
     @IBOutlet weak var signalPath: UIView!
     var SignalPathLengh: CGFloat = 40
-    var needToStretchThePath = true
+    var pathWithBlock = false
     var x: CGFloat = 100
     var y: CGFloat = 100
 
+    @IBOutlet weak var backLine: UIView!
+    @IBOutlet weak var backArrow: UILabel!
+    
+    
     @IBAction func addBlock(sender: UIButton) {
         addBlock(x, posY: y)
         
-        
     }
+    
     @IBAction func deleteBlock(sender: UIButton) {
         deleteBlock()
+        
     }
     override func viewDidLoad() {
         super.viewDidLoad()
+        
        
     }
 
@@ -32,6 +38,8 @@ class ViewController: UIViewController {
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
     }
+    
+    
     
     func addBlock(posX: CGFloat, posY: CGFloat){
         let block = UIButton()
@@ -41,6 +49,7 @@ class ViewController: UIViewController {
 
         block.addTarget(self, action: #selector(ViewController.changeBlockPosition(_:event:)), forControlEvents: UIControlEvents.TouchDragInside)
         self.view.addSubview(block)
+        
     }
     
     func alertForInputName(button: UIButton){
@@ -66,41 +75,46 @@ class ViewController: UIViewController {
             let deltaY: CGFloat = location.y - previousLocation.y
             button.center = CGPointMake(button.center.x + deltaX, button.center.y + deltaY)
             
-            
-            
             // make signalPath strech
-            if needToStretchThePath == true {
-                SignalPathLengh = getSingalPathLength(button)
-                signalPath.frame = CGRectMake(270, 72, SignalPathLengh, 128)
-            }
+            signalPath.frame = CGRectMake(270, 64, getSingalPathLength(), 85)
+            
+            let backLineX = signalPath.frame.origin.x + signalPath.frame.width
+//            
+            backLine.center = CGPoint(x: backLineX, y: signalPath.center.y)
+//            
+//            let backArrowX = backLine.frame.origin.x + backLine.frame.width
+//            backArrow.center = CGPoint(x: backArrowX, y: backLine.center.y)
+            
         }
     }
     
-    func getSingalPathLength(button: UIButton) -> CGFloat {
-        
+    func getSingalPathLength() -> CGFloat {
         var totalLenghOfBlocksForFirstPath: CGFloat = 0
         var totalLenghOfBlocksForSecondPath: CGFloat = 0
+        
         for block in self.view.subviews {
-            // on first Path
-            if block.isKindOfClass(UIButton) && signalPath.frame.contains(button.center) && block.center.y <= signalPath.frame.origin.y + signalPath.frame.height / 2
+            // blocks on first Path
+            if block.isKindOfClass(UIButton) && signalPath.frame.contains(block.center) && block.center.y <= signalPath.frame.origin.y + signalPath.frame.height / 2
             {
                 totalLenghOfBlocksForFirstPath += block.frame.width
             }
                 
-            // on the second Path
-            else if block.isKindOfClass(UIButton) && signalPath.frame.contains(button.center) && block.center.y > signalPath.frame.origin.y + signalPath.frame.height / 2
+            // blocks on the second Path
+            else if block.isKindOfClass(UIButton) && signalPath.frame.contains(block.center) && block.center.y > signalPath.frame.origin.y + signalPath.frame.height / 2
             {
                 totalLenghOfBlocksForSecondPath += block.frame.width
             }
         }
         
-        var result: CGFloat = 20
+        var result = CGFloat()
         if totalLenghOfBlocksForFirstPath >= totalLenghOfBlocksForSecondPath {
             result = totalLenghOfBlocksForFirstPath + 40
         } else {
             result = totalLenghOfBlocksForSecondPath + 40
         }
-        return result
+        
+        SignalPathLengh = result
+        return SignalPathLengh
     }
     
     func deleteBlock(){
