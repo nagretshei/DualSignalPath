@@ -13,15 +13,18 @@ class ViewController: UIViewController {
     var SignalPathLengh: CGFloat = 40
     var pathWithBlock = false
     var x: CGFloat = 100
-    var y: CGFloat = 100
-
+    var y: CGFloat = 300
+    //var testVariabale: CGFloat = 400
+    
     @IBOutlet weak var backLine: UIView!
     @IBOutlet weak var backArrow: UILabel!
     
     
     @IBAction func addBlock(sender: UIButton) {
         addBlock(x, posY: y)
-        
+//        signalPath.frame = CGRectMake(300, 64, SignalPathLengh, 85)
+//        self.signalPath.setNeedsDisplay()
+
     }
     
     @IBAction func deleteBlock(sender: UIButton) {
@@ -31,26 +34,29 @@ class ViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-       
+        
     }
-
+    
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
     }
-    
-    
     
     func addBlock(posX: CGFloat, posY: CGFloat){
         let block = UIButton()
         alertForInputName(block)
         block.frame = CGRectMake(posX, posY, 80, 40)
         block.backgroundColor = UIColor.grayColor()
-
+        
         block.addTarget(self, action: #selector(ViewController.changeBlockPosition(_:event:)), forControlEvents: UIControlEvents.TouchDragInside)
+//        backLine.frame = CGRectMake(400, 64, 30 , 85)
+//        self.backLine.setNeedsDisplay()
         self.view.addSubview(block)
+        //getSingalPathLength()
         
     }
+    
+    
     
     func alertForInputName(button: UIButton){
         let alert = UIAlertController(title: "Input Name", message: "Please give a name showing on the block", preferredStyle: .Alert)
@@ -77,14 +83,20 @@ class ViewController: UIViewController {
             
             // make signalPath strech
             signalPath.frame = CGRectMake(270, 64, getSingalPathLength(), 85)
-            
+//            self.signalPath.setNeedsDisplay()
+     
             let backLineX = signalPath.frame.origin.x + signalPath.frame.width
-//            
             backLine.center = CGPoint(x: backLineX, y: signalPath.center.y)
-//            
-//            let backArrowX = backLine.frame.origin.x + backLine.frame.width
-//            backArrow.center = CGPoint(x: backArrowX, y: backLine.center.y)
+            let backArrowX = backLine.frame.origin.x + backLine.frame.width
+            backArrow.center = CGPoint(x: backArrowX, y: backLine.center.y)
             
+        }
+    }
+    
+    func moveOtherBlocks(){
+        for block in self.view.subviews {
+            //if block.frame.contains(pan gesture origin)
+
         }
     }
     
@@ -99,7 +111,7 @@ class ViewController: UIViewController {
                 totalLenghOfBlocksForFirstPath += block.frame.width
             }
                 
-            // blocks on the second Path
+                // blocks on the second Path
             else if block.isKindOfClass(UIButton) && signalPath.frame.contains(block.center) && block.center.y > signalPath.frame.origin.y + signalPath.frame.height / 2
             {
                 totalLenghOfBlocksForSecondPath += block.frame.width
@@ -114,13 +126,14 @@ class ViewController: UIViewController {
         }
         
         SignalPathLengh = result
+        //self.signalPath.setNeedsDisplay()
         return SignalPathLengh
     }
     
     func deleteBlock(){
         if self.view.subviews.last!.isKindOfClass(UIButton) {
-                self.view.subviews.last!.removeFromSuperview()
-            }
+            self.view.subviews.last!.removeFromSuperview()
+        }
     }
 }
 

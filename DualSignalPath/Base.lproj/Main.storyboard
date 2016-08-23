@@ -86,14 +86,6 @@
                                 <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
                                 <nil key="highlightedColor"/>
                             </label>
-                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="15d-l0-VtV">
-                                <rect key="frame" x="270" y="84" width="40" height="85"/>
-                                <color key="backgroundColor" white="0.66666666666666663" alpha="1" colorSpace="calibratedWhite"/>
-                                <constraints>
-                                    <constraint firstAttribute="height" constant="85" id="LKq-wB-UK7"/>
-                                    <constraint firstAttribute="width" constant="40" id="eNp-Fr-vAh"/>
-                                </constraints>
-                            </view>
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="E5O-ac-Kx5" userLabel="backLine">
                                 <rect key="frame" x="310" y="124" width="40" height="5"/>
                                 <color key="backgroundColor" white="0.66666666666666663" alpha="1" colorSpace="calibratedWhite"/>
@@ -113,6 +105,15 @@
                                 <color key="textColor" cocoaTouchSystemColor="scrollViewTexturedBackgroundColor"/>
                                 <nil key="highlightedColor"/>
                             </label>
+                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="15d-l0-VtV">
+                                <rect key="frame" x="270" y="95" width="40" height="63"/>
+                                <color key="backgroundColor" white="0.66666666666666663" alpha="1" colorSpace="calibratedWhite"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" relation="greaterThanOrEqual" constant="63" id="1vr-zD-sek"/>
+                                    <constraint firstAttribute="height" constant="63" id="LKq-wB-UK7"/>
+                                    <constraint firstAttribute="width" constant="40" id="eNp-Fr-vAh"/>
+                                </constraints>
+                            </view>
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
                         <constraints>
@@ -125,15 +126,14 @@
                             <constraint firstItem="lea-89-72K" firstAttribute="centerX" secondItem="jRk-II-CHP" secondAttribute="centerX" id="HLC-sc-YfR"/>
                             <constraint firstItem="jRk-II-CHP" firstAttribute="leading" secondItem="8bC-Xf-vdC" secondAttribute="leadingMargin" constant="24" id="JLz-2t-Sug"/>
                             <constraint firstItem="Uxz-ly-DYz" firstAttribute="leading" secondItem="E5O-ac-Kx5" secondAttribute="trailing" constant="-11" id="Kg2-P4-MKC"/>
-                            <constraint firstItem="15d-l0-VtV" firstAttribute="centerY" secondItem="oxc-2j-9L6" secondAttribute="centerY" constant="5.5" id="Q31-Ae-RWx"/>
-                            <constraint firstItem="15d-l0-VtV" firstAttribute="top" secondItem="y3c-jy-aDJ" secondAttribute="bottom" constant="64" id="Twj-aK-zA4"/>
                             <constraint firstItem="E5O-ac-Kx5" firstAttribute="top" secondItem="Uxz-ly-DYz" secondAttribute="bottom" constant="-12" id="cx2-SM-X2b"/>
                             <constraint firstItem="ZaB-B4-LvB" firstAttribute="leading" secondItem="8bC-Xf-vdC" secondAttribute="leadingMargin" constant="10" id="dXE-fR-9iZ"/>
+                            <constraint firstItem="15d-l0-VtV" firstAttribute="top" secondItem="oxc-2j-9L6" secondAttribute="bottom" constant="-48" id="gRL-LO-cRr"/>
                             <constraint firstItem="6iN-dj-CG8" firstAttribute="centerX" secondItem="jlh-Bv-cvk" secondAttribute="centerX" id="gYE-0Y-oS3"/>
                             <constraint firstItem="ZaB-B4-LvB" firstAttribute="top" secondItem="y3c-jy-aDJ" secondAttribute="bottom" constant="92" id="mEP-82-2ef"/>
                             <constraint firstItem="6iN-dj-CG8" firstAttribute="centerY" secondItem="jlh-Bv-cvk" secondAttribute="centerY" id="qfQ-Xe-cA3"/>
                             <constraint firstItem="lea-89-72K" firstAttribute="centerY" secondItem="jRk-II-CHP" secondAttribute="centerY" id="rLu-Zb-X57"/>
-                            <constraint firstItem="15d-l0-VtV" firstAttribute="top" secondItem="E5O-ac-Kx5" secondAttribute="bottom" constant="-45" id="uHV-Kc-38Y"/>
+                            <constraint firstItem="15d-l0-VtV" firstAttribute="top" secondItem="E5O-ac-Kx5" secondAttribute="bottom" constant="-34" id="uHV-Kc-38Y"/>
                             <constraint firstItem="oxc-2j-9L6" firstAttribute="top" secondItem="y3c-jy-aDJ" secondAttribute="bottom" constant="79" id="wDH-Uw-q02"/>
                         </constraints>
                     </view>
