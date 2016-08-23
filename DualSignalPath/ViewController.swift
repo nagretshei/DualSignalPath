@@ -12,14 +12,16 @@ class ViewController: UIViewController {
     @IBOutlet weak var signalPath: UIView!
     var SignalPathLengh: CGFloat = 80
     var pathWithBlock = false
-    var x: CGFloat = 100
-    var y: CGFloat = 300
+    var x = CGFloat()
+    var y = CGFloat()
     
     @IBOutlet weak var backLine: UIView!
     @IBOutlet weak var backArrow: UILabel!
     
     
     @IBAction func addBlock(sender: UIButton) {
+         x = backLine.frame.origin.x + 10
+         y = backLine.center.y - 20
         addBlock(x, posY: y)
 //        signalPath.frame = CGRectMake(300, 64, getSingalPathLength(), 85)
 //        self.signalPath.setNeedsDisplay()
@@ -160,6 +162,8 @@ class ViewController: UIViewController {
             }
         }
     }
+    
+    
     
     func deleteBlock(){
         if self.view.subviews.last!.isKindOfClass(UIButton) {

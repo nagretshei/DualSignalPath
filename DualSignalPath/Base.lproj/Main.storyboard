@@ -87,24 +87,14 @@
                                 <nil key="highlightedColor"/>
                             </label>
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="E5O-ac-Kx5" userLabel="backLine">
-                                <rect key="frame" x="310" y="124" width="40" height="5"/>
+                                <rect key="frame" x="310" y="124" width="100" height="5"/>
                                 <color key="backgroundColor" white="0.66666666666666663" alpha="1" colorSpace="calibratedWhite"/>
                                 <constraints>
-                                    <constraint firstAttribute="width" constant="40" id="SZ9-qg-bEA"/>
+                                    <constraint firstAttribute="width" constant="100" id="SZ9-qg-bEA"/>
                                     <constraint firstAttribute="width" relation="greaterThanOrEqual" constant="40" id="fLp-r2-c9K"/>
                                     <constraint firstAttribute="height" constant="5" id="zVg-2g-y9L"/>
                                 </constraints>
                             </view>
-                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="➤" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Uxz-ly-DYz">
-                                <rect key="frame" x="339" y="118" width="29" height="18"/>
-                                <constraints>
-                                    <constraint firstAttribute="height" constant="18" id="0Cg-cP-MY1"/>
-                                    <constraint firstAttribute="width" constant="29" id="7YR-yq-dbq"/>
-                                </constraints>
-                                <fontDescription key="fontDescription" name="ZapfDingbatsITC" family="Zapf Dingbats" pointSize="21"/>
-                                <color key="textColor" cocoaTouchSystemColor="scrollViewTexturedBackgroundColor"/>
-                                <nil key="highlightedColor"/>
-                            </label>
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="15d-l0-VtV">
                                 <rect key="frame" x="270" y="95" width="40" height="63"/>
                                 <color key="backgroundColor" white="0.66666666666666663" alpha="1" colorSpace="calibratedWhite"/>
@@ -114,6 +104,16 @@
                                     <constraint firstAttribute="width" constant="40" id="eNp-Fr-vAh"/>
                                 </constraints>
                             </view>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="➤" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Uxz-ly-DYz">
+                                <rect key="frame" x="399" y="118" width="29" height="18"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="18" id="0Cg-cP-MY1"/>
+                                    <constraint firstAttribute="width" constant="29" id="7YR-yq-dbq"/>
+                                </constraints>
+                                <fontDescription key="fontDescription" name="ZapfDingbatsITC" family="Zapf Dingbats" pointSize="21"/>
+                                <color key="textColor" cocoaTouchSystemColor="scrollViewTexturedBackgroundColor"/>
+                                <nil key="highlightedColor"/>
+                            </label>
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
                         <constraints>
