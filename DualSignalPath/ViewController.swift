@@ -15,16 +15,14 @@ class ViewController: UIViewController {
     @IBOutlet weak var backLine: UIView!
     @IBOutlet weak var backArrow: UILabel!
     
-    
-    var pathWithBlock = false
     var blockCount: Int = 0
-    var signalPathX = CGFloat()
-    var backLineX = CGFloat()
-    var theEndOfBackLineX = CGFloat()
-    var signalPathLengh: CGFloat = 40
+    var signalPathX: CGFloat = 162
+    var backLineX: CGFloat = 202
+    var theEndOfBackLineX: CGFloat = 302
+    var signalPathLength: CGFloat = 40
     
-    //var needToResetPath = Bool()
-    
+    var previousTheEndOfBackLineX = CGFloat()
+    var changedLength = CGFloat()
     
     @IBAction func addBlock(sender: UIButton) {
          let x = backLine.frame.origin.x + 10
@@ -40,10 +38,8 @@ class ViewController: UIViewController {
         }
     }
     
-    
     override func viewDidLoad() {
         super.viewDidLoad()
-        
         
     }
     
@@ -51,8 +47,6 @@ class ViewController: UIViewController {
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
     }
-    
-    
     
     func addBlock(posX: CGFloat, posY: CGFloat){
         let block = UIButton()
@@ -95,9 +89,31 @@ class ViewController: UIViewController {
             makeSignalPathsFlexible()
             makeBackLineFlexible()
             moveBackArrow()
-
+            setBlocksRelativePositionToPath(button)
         }
     }
+    
+    func setBlocksRelativePositionToPath(button: UIButton){
+        lengthChange()
+        for block in self.view.subviews {
+            if block.isKindOfClass(UIButton) && block.frame.width >= 80 && block != button && block.center.x > button.center.x
+            {
+                block.center.x += changedLength
+            }
+        }
+        
+    }
+    
+    func calculateTheEndOfBackLineX(){
+        theEndOfBackLineX = backLineX + backLine.frame.width
+        //print(theEndOfBackLineX)
+    }
+    
+    func lengthChange(){
+        changedLength = theEndOfBackLineX - previousTheEndOfBackLineX
+       // print(changedLength)
+    }
+    
     
     func makeFrontLineFlexible(){
         frontLine.frame = CGRectMake(frontLine.frame.origin.x, frontLine.frame.origin.y, getLinesLength(frontLine, lengthOffset: 21), 3)
@@ -106,16 +122,19 @@ class ViewController: UIViewController {
     func makeSignalPathsFlexible(){
         signalPathX = frontLine.frame.origin.x + frontLine.frame.width
         signalPath.frame = CGRectMake(signalPathX, signalPath.frame.origin.y, getSingalPathLength(), 63)
-        hollow.frame = CGRectMake(hollow.frame.origin.x , hollow.frame.origin.y, signalPathLengh - CGFloat(6), 57)
+        hollow.frame = CGRectMake(hollow.frame.origin.x , hollow.frame.origin.y, signalPathLength - CGFloat(6), 57)
     }
     
     func makeBackLineFlexible(){
+        previousTheEndOfBackLineX = theEndOfBackLineX
         backLineX = signalPathX + signalPath.frame.width
-        
         if checkBlockOnPath(backLine) == true {
-        backLine.frame = CGRectMake(backLineX, backLine.frame.origin.y, getLinesLength(backLine, lengthOffset: 100) - 100, 3)
+            backLine.frame = CGRectMake(backLineX, backLine.frame.origin.y, getLinesLength(backLine, lengthOffset: 100) - 100, 3)
+            calculateTheEndOfBackLineX()
+
         } else {
-    backLine.frame = CGRectMake(backLineX, backLine.frame.origin.y, getLinesLength(backLine, lengthOffset: 100), 3)
+            backLine.frame = CGRectMake(backLineX, backLine.frame.origin.y, getLinesLength(backLine, lengthOffset: 100), 3)
+            calculateTheEndOfBackLineX()
         }
     }
     
@@ -168,8 +187,8 @@ class ViewController: UIViewController {
             result = totalLenghOfBlocksForSecondPath + CGFloat(30 * blockCountsOnSecondPath)
         }
         
-        signalPathLengh = result
-        return signalPathLengh
+        signalPathLength = result
+        return signalPathLength
     }
     
     
@@ -194,15 +213,13 @@ class ViewController: UIViewController {
                     if previousBlock.frame.intersects(block.frame) == true {
                         if block.center.x >= previousBlock.center.x
                         {
-                            //block.center.x = previousBlock.center.x + 100
-                            block.center.x += 20
+                            block.center.x = previousBlock.center.x - 80
                             previousBlock = block as! UIButton
                             
                         }
                         else if block.center.x < previousBlock.center.x
                         {
-                            //block.center.x = previousBlock.center.x - 100
-                            block.center.x -= 20
+                            block.center.x = previousBlock.center.x + 80
                             previousBlock = block as! UIButton
                             
                         } else
