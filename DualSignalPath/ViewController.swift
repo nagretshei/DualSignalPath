@@ -9,15 +9,21 @@
 import UIKit
 
 class ViewController: UIViewController {
+    @IBOutlet weak var frontLine: UIView!
     @IBOutlet weak var signalPath: UIView!
-    var SignalPathLengh: CGFloat = 80
-    var pathWithBlock = false
-    
-    var blockCount: Int = 0
-    
     @IBOutlet weak var hollow: UIView!
     @IBOutlet weak var backLine: UIView!
     @IBOutlet weak var backArrow: UILabel!
+    
+    
+    var pathWithBlock = false
+    var blockCount: Int = 0
+    var signalPathX = CGFloat()
+    var backLineX = CGFloat()
+    var theEndOfBackLineX = CGFloat()
+    var signalPathLengh: CGFloat = 40
+    
+    //var needToResetPath = Bool()
     
     
     @IBAction func addBlock(sender: UIButton) {
@@ -29,12 +35,12 @@ class ViewController: UIViewController {
     
     @IBAction func deleteBlock(sender: UIButton) {
         deleteBlock()
-        
         if blockCount > 0 {
             blockCount -= 1
         }
-        
     }
+    
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         
@@ -45,6 +51,8 @@ class ViewController: UIViewController {
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
     }
+    
+    
     
     func addBlock(posX: CGFloat, posY: CGFloat){
         let block = UIButton()
@@ -57,8 +65,6 @@ class ViewController: UIViewController {
         self.view.addSubview(block)
         
     }
-    
-    
     
     func alertForInputName(button: UIButton){
         let alert = UIAlertController(title: "Input Name", message: "Please give a name showing on the block", preferredStyle: .Alert)
@@ -75,6 +81,7 @@ class ViewController: UIViewController {
     }
     
     func dragBlock(button: UIButton, event: UIEvent){
+        
         // make block moves
         for touch in event.touchesForView(button)!{
             let previousLocation: CGPoint = touch.previousLocationInView(button)
@@ -83,31 +90,58 @@ class ViewController: UIViewController {
             let deltaY: CGFloat = location.y - previousLocation.y
             button.center = CGPointMake(button.center.x + deltaX, button.center.y + deltaY)
             
-            moveOtherBlocks(button)
-            
-            // make signalPath strech
-            if checkBlockOnPath() == true {
-                signalPath.frame = CGRectMake(signalPath.frame.origin.x, signalPath.frame.origin.y, getSingalPathLength(), 63)
-                hollow.frame = CGRectMake(hollow.frame.origin.x , hollow.frame.origin.y, SignalPathLengh - CGFloat(6), 57)
-                self.signalPath.setNeedsDisplay()
-                
-            }
-            
-            
-     
-            let backLineX = signalPath.frame.origin.x + signalPath.frame.width
-            backLine.center = CGPoint(x: backLineX, y: signalPath.center.y)
-            let backArrowX = backLine.frame.origin.x + backLine.frame.width
-            backArrow.center = CGPoint(x: backArrowX, y: backLine.center.y)
-            
+            alignBlocks(button)
+            makeFrontLineFlexible()
+            makeSignalPathsFlexible()
+            makeBackLineFlexible()
+            moveBackArrow()
+
         }
     }
     
-
+    func makeFrontLineFlexible(){
+        frontLine.frame = CGRectMake(frontLine.frame.origin.x, frontLine.frame.origin.y, getLinesLength(frontLine, lengthOffset: 21), 3)
+    }
+    
+    func makeSignalPathsFlexible(){
+        signalPathX = frontLine.frame.origin.x + frontLine.frame.width
+        signalPath.frame = CGRectMake(signalPathX, signalPath.frame.origin.y, getSingalPathLength(), 63)
+        hollow.frame = CGRectMake(hollow.frame.origin.x , hollow.frame.origin.y, signalPathLengh - CGFloat(6), 57)
+    }
+    
+    func makeBackLineFlexible(){
+        backLineX = signalPathX + signalPath.frame.width
+        
+        if checkBlockOnPath(backLine) == true {
+        backLine.frame = CGRectMake(backLineX, backLine.frame.origin.y, getLinesLength(backLine, lengthOffset: 100) - 100, 3)
+        } else {
+    backLine.frame = CGRectMake(backLineX, backLine.frame.origin.y, getLinesLength(backLine, lengthOffset: 100), 3)
+        }
+    }
+    
+    func moveBackArrow(){
+        let backArrowX = backLine.frame.origin.x + backLine.frame.width
+        backArrow.center = CGPoint(x: backArrowX, y: backLine.center.y)
+    }
+    
+    func getLinesLength(line: UIView, lengthOffset: CGFloat) -> CGFloat {
+        var totalLenghOfLine: CGFloat = lengthOffset
+        var blockCountsOnLine: Int = 0
+        
+        for block in self.view.subviews {
+            if block.isKindOfClass(UIButton) && line.frame.intersects(block.frame)
+            {
+                totalLenghOfLine += block.frame.width
+                blockCountsOnLine += 1
+            }
+        }
+        let result: CGFloat = totalLenghOfLine + CGFloat(30 * blockCountsOnLine)
+        return result
+    }
     
     func getSingalPathLength() -> CGFloat {
-        var totalLenghOfBlocksForFirstPath: CGFloat = 0
-        var totalLenghOfBlocksForSecondPath: CGFloat = 0
+        var totalLenghOfBlocksForFirstPath: CGFloat = 40
+        var totalLenghOfBlocksForSecondPath: CGFloat = 40
         var blockCountsOnFirstPath: Int = 0
         var blockCountsOnSecondPath: Int = 0
         
@@ -134,15 +168,15 @@ class ViewController: UIViewController {
             result = totalLenghOfBlocksForSecondPath + CGFloat(30 * blockCountsOnSecondPath)
         }
         
-        SignalPathLengh = result
-        return SignalPathLengh
+        signalPathLengh = result
+        return signalPathLengh
     }
     
     
-    func checkBlockOnPath() -> Bool {
+    func checkBlockOnPath(part: UIView) -> Bool {
         var result = false
         for block in self.view.subviews {
-            if block.isKindOfClass(UIButton) && signalPath.frame.intersects(block.frame) == true
+            if block.isKindOfClass(UIButton) && part.frame.intersects(block.frame) == true
             {
                 result =  true
             }
@@ -150,7 +184,7 @@ class ViewController: UIViewController {
         return result
     }
     
-    func moveOtherBlocks(selfButton: UIButton){
+    func alignBlocks(selfButton: UIButton){
         var previousBlock: UIButton = selfButton
         
         for i in 1...blockCount {

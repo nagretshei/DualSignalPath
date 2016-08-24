@@ -165,6 +165,7 @@
                     <connections>
                         <outlet property="backArrow" destination="Uxz-ly-DYz" id="vjf-Nw-MCZ"/>
                         <outlet property="backLine" destination="E5O-ac-Kx5" id="20M-W6-6Ou"/>
+                        <outlet property="frontLine" destination="Brc-v7-sfB" id="jLg-qr-z71"/>
                         <outlet property="hollow" destination="KAX-or-hRT" id="OCJ-uS-jjc"/>
                         <outlet property="signalPath" destination="15d-l0-VtV" id="7Fx-7e-TT8"/>
                     </connections>
