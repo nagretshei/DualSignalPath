@@ -12,20 +12,15 @@ class ViewController: UIViewController {
     @IBOutlet weak var signalPath: UIView!
     var SignalPathLengh: CGFloat = 80
     var pathWithBlock = false
-    var x = CGFloat()
-    var y = CGFloat()
     
     @IBOutlet weak var backLine: UIView!
     @IBOutlet weak var backArrow: UILabel!
     
     
     @IBAction func addBlock(sender: UIButton) {
-         x = backLine.frame.origin.x + 10
-         y = backLine.center.y - 20
+         let x = backLine.frame.origin.x + 10
+         let y = backLine.center.y - 20
         addBlock(x, posY: y)
-//        signalPath.frame = CGRectMake(300, 64, getSingalPathLength(), 85)
-//        self.signalPath.setNeedsDisplay()
-
     }
     
     @IBAction func deleteBlock(sender: UIButton) {
@@ -49,7 +44,7 @@ class ViewController: UIViewController {
         block.frame = CGRectMake(posX, posY, 80, 40)
         block.backgroundColor = UIColor.grayColor()
         
-        block.addTarget(self, action: #selector(ViewController.changeBlockPosition(_:event:)), forControlEvents: UIControlEvents.TouchDragInside)
+        block.addTarget(self, action: #selector(ViewController.dragBlock(_:event:)), forControlEvents: UIControlEvents.TouchDragInside)
         
         self.view.addSubview(block)
         
@@ -71,7 +66,7 @@ class ViewController: UIViewController {
         self.presentViewController(alert, animated: true, completion: nil)
     }
     
-    func changeBlockPosition(button: UIButton, event: UIEvent){
+    func dragBlock(button: UIButton, event: UIEvent){
         // make block moves
         for touch in event.touchesForView(button)!{
             let previousLocation: CGPoint = touch.previousLocationInView(button)
@@ -88,6 +83,8 @@ class ViewController: UIViewController {
                 signalPath.frame = CGRectMake(270, 64, getSingalPathLength(), 85)
                 self.signalPath.setNeedsDisplay()
             }
+            
+            
      
             let backLineX = signalPath.frame.origin.x + signalPath.frame.width
             backLine.center = CGPoint(x: backLineX, y: signalPath.center.y)
@@ -102,31 +99,36 @@ class ViewController: UIViewController {
     func getSingalPathLength() -> CGFloat {
         var totalLenghOfBlocksForFirstPath: CGFloat = 0
         var totalLenghOfBlocksForSecondPath: CGFloat = 0
+        var blockCountsOnFirstPath: Int = 0
+        var blockCountsOnSecondPath: Int = 0
         
         for block in self.view.subviews {
             // blocks on first Path
             if block.isKindOfClass(UIButton) && signalPath.frame.intersects(block.frame) && block.center.y <= signalPath.frame.origin.y + signalPath.frame.height / 2
             {
                 totalLenghOfBlocksForFirstPath += block.frame.width
+                blockCountsOnFirstPath += 1
             }
                 
                 // blocks on the second Path
             else if block.isKindOfClass(UIButton) && signalPath.frame.intersects(block.frame) && block.center.y > signalPath.frame.origin.y + signalPath.frame.height / 2
             {
                 totalLenghOfBlocksForSecondPath += block.frame.width
+                blockCountsOnSecondPath += 1
             }
         }
         
         var result = CGFloat()
         if totalLenghOfBlocksForFirstPath >= totalLenghOfBlocksForSecondPath {
-            result = totalLenghOfBlocksForFirstPath + 40
+            result = totalLenghOfBlocksForFirstPath + CGFloat(30 * blockCountsOnFirstPath)
         } else {
-            result = totalLenghOfBlocksForSecondPath + 40
+            result = totalLenghOfBlocksForSecondPath + CGFloat(30 * blockCountsOnSecondPath)
         }
         
         SignalPathLengh = result
         return SignalPathLengh
     }
+    
     
     func checkBlockOnPath() -> Bool {
         var result = false
@@ -139,28 +141,119 @@ class ViewController: UIViewController {
         return result
     }
     
-    func moveOtherBlocks(button: UIButton){
+    func moveOtherBlocks(selfButton: UIButton){
+        var previousBlock: UIButton = selfButton
         
-        var previousBlock: UIButton = button
-        
+//        for block in self.view.subviews {
+//            if block.isKindOfClass(UIButton) && signalPath.frame.intersects(block.frame) && block != selfButton {
+//                if previousBlock.frame.intersects(block.frame) == true {
+//                    previousBlock = block as! UIButton
+//                    
+//                    if block.center.x >= selfButton.center.x
+//                    {
+//                        block.center.x = selfButton.center.x + 100
+//                        
+//                    }
+//                    else if block.center.x < selfButton.center.x
+//                    {
+//                        block.center.x = selfButton.center.x - 100
+//                    }
+//                }
+//            }
+//            
+//        }
         for block in self.view.subviews {
-            if block.isKindOfClass(UIButton) && block.frame.width >= 80 && block != button {
+            if block.isKindOfClass(UIButton) && block.frame.width >= 80 && previousBlock.frame.intersects(block.frame) && block != previousBlock {
                 if previousBlock.frame.intersects(block.frame) == true {
-                    previousBlock = block as! UIButton
-                    
-                    if block.center.x >= button.center.x
+                    if block.center.x >= previousBlock.center.x
                     {
-                        block.center.x = button.center.x + 90
+                        //block.center.x = previousBlock.center.x + 100
+                        block.center.x += 15
+                        previousBlock = block as! UIButton
                         
                     }
-                    else if block.center.x < button.center.x
+                    else if block.center.x < previousBlock.center.x
                     {
-                        block.center.x = button.center.x - 90
+                        //block.center.x = previousBlock.center.x - 100
+                        block.center.x -= 15
+                        previousBlock = block as! UIButton
+                        
+                    } else
+                    {
+                        previousBlock = block as! UIButton
                     }
                 }
-                
             }
+            
         }
+        for block in self.view.subviews {
+            if block.isKindOfClass(UIButton) && block.frame.width >= 80 && previousBlock.frame.intersects(block.frame) && block != previousBlock {
+                if previousBlock.frame.intersects(block.frame) == true {
+                    if block.center.x >= previousBlock.center.x
+                    {
+                        //block.center.x = previousBlock.center.x + 100
+                        block.center.x += 15
+                        previousBlock = block as! UIButton
+                        
+                    }
+                    else if block.center.x < previousBlock.center.x
+                    {
+                        //block.center.x = previousBlock.center.x - 100
+                        block.center.x -= 15
+                        previousBlock = block as! UIButton
+                        
+                    } else
+                    {
+                        previousBlock = block as! UIButton
+                    }
+                }
+            }
+            
+        }
+        
+//        for block in self.view.subviews {
+//            if block.isKindOfClass(UIButton) && signalPath.frame.intersects(block.frame) && block != previousBlock {
+//                if previousBlock.frame.intersects(block.frame) == true {
+//                    //previousBlock = block as! UIButton
+//                    
+//                    if block.center.x >= previousBlock.center.x
+//                    {
+//                        block.center.x = selfButton.center.x + 100
+//                        previousBlock = block as! UIButton
+//                    }
+//                    else if block.center.x < selfButton.center.x
+//                    {
+//                        block.center.x = selfButton.center.x - 100
+//                        previousBlock = block as! UIButton
+//                    }
+//                }
+//            }
+//            
+//        }
+//        //var previousBlock: UIButton = selfButton
+//        for everyBlock in self.view.subviews {
+//            if everyBlock.isKindOfClass(UIButton) && signalPath.frame.intersects(everyBlock.frame) {
+//                
+//                for block in self.view.subviews {
+//                    if block.isKindOfClass(UIButton) && signalPath.frame.intersects(block.frame) && block != everyBlock {
+//                        if everyBlock.frame.intersects(block.frame) == true {
+//                            
+//                            if block.center.x >= everyBlock.center.x
+//                            {
+//                                block.center.x = everyBlock.center.x + 100
+//                                
+//                            }
+//                            else if block.center.x < everyBlock.center.x
+//                            {
+//                                block.center.x = everyBlock.center.x - 100
+//                            }
+//                        }
+//                    }
+//                    
+//                }
+//            }
+//        }
+     
     }
     
     
