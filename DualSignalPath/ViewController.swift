@@ -15,6 +15,7 @@ class ViewController: UIViewController {
     
     var blockCount: Int = 0
     
+    @IBOutlet weak var hollow: UIView!
     @IBOutlet weak var backLine: UIView!
     @IBOutlet weak var backArrow: UILabel!
     
@@ -86,8 +87,10 @@ class ViewController: UIViewController {
             
             // make signalPath strech
             if checkBlockOnPath() == true {
-                signalPath.frame = CGRectMake(270, 64, getSingalPathLength(), 85)
+                signalPath.frame = CGRectMake(signalPath.frame.origin.x, signalPath.frame.origin.y, getSingalPathLength(), 63)
+                hollow.frame = CGRectMake(hollow.frame.origin.x , hollow.frame.origin.y, SignalPathLengh - CGFloat(6), 57)
                 self.signalPath.setNeedsDisplay()
+                
             }
             
             
