@@ -23,6 +23,7 @@ class ViewController: UIViewController {
     var selectedBlock = UIButton()
     
     var touchPosition = CGPoint()
+    var blockDragedLength = CGFloat()
     
     var previousTheEndOfBackLineX = CGFloat()
     var changedLength = CGFloat()
@@ -54,7 +55,6 @@ class ViewController: UIViewController {
     override func touchesBegan(touches: Set<UITouch>, withEvent event: UIEvent?) {
         if let touch = touches.first {
             touchPosition = touch.locationInView(view)
-            print (touchPosition)
             deSelect(touchPosition)
             
         }
@@ -117,6 +117,7 @@ class ViewController: UIViewController {
             let deltaX: CGFloat = location.x - previousLocation.x
             let deltaY: CGFloat = location.y - previousLocation.y
             button.center = CGPointMake(button.center.x + deltaX, button.center.y + deltaY)
+            blockDragedLength = deltaX
             
             alignBlocks(button)
             makeFrontLineFlexible()
@@ -239,66 +240,49 @@ class ViewController: UIViewController {
     
     func alignBlocks(selfButton: UIButton){
         var previousBlock: UIButton = selfButton
-        
-        
-        for i in 1...blockCount {
-            for block in self.view.subviews {
-                if block.isKindOfClass(UIButton) && block.frame.width >= 80 && block != previousBlock && previousBlock.frame.intersects(block.frame) == true {
-                    
-                    //let tempX = previousBlock.center.x
-                    if block.center.x >= previousBlock.center.x
-                    {
-                        //previousBlock.center.x = block.center.x
-                        block.center.x = previousBlock.center.x - block.frame.width
+        if blockCount > 1 {
+            for i in 1...blockCount {
+                for block in self.view.subviews {
+                    if block.isKindOfClass(UIButton) && block.frame.width >= 80 && block != previousBlock && previousBlock.frame.intersects(block.frame) == true {
                         
-                        previousBlock = block as! UIButton
+                        //let tempX = previousBlock.center.x
                         
-                    }
-                    else if block.center.x < previousBlock.center.x
-                    {
-                        //previousBlock.center.x = block.center.x
-                        block.center.x = previousBlock.center.x + block.frame.width
-                        //block.center.x = previousBlock.center.x
-                        previousBlock = block as! UIButton
-                        
-                    }
-                    
-                    else
-                    {
-                        previousBlock = block as! UIButton
-                        
+                        if block.center.x >= previousBlock.center.x
+                        {
+                            //previousBlock.center.x = block.center.x
+                            //previousBlock.center.x = touchPosition.x
+                            block.center.x = previousBlock.center.x - block.frame.width
+                            //block.center.x = touchPosition.x - blockDragedLength
+                            
+                            previousBlock = block as! UIButton
+                            
+                        }
+                        else if block.center.x < previousBlock.center.x
+                        {
+                            //previousBlock.center.x = block.center.x
+                            //previousBlock.center.x = touchPosition.x
+                            block.center.x = previousBlock.center.x + block.frame.width
+                            //block.center.x = touchPosition.x + blockDragedLength
+                            previousBlock = block as! UIButton
+                            
+                        }
+                            
+                        else
+                        {
+                            previousBlock = block as! UIButton
+                            
+                        }
                     }
                 }
             }
         }
-        //        for i in 1...blockCount {
-        //            for block in self.view.subviews {
-        //                if block.isKindOfClass(UIButton) && block.frame.width >= 80 && previousBlock.center.x - block.center.x >= abs(50) {
-        //
-        //                    if block.center.x >= previousBlock.center.x
-        //                    {
-        //                        block.center.x = previousBlock.center.x + 100
-        //                        previousBlock = block as! UIButton
-        //
-        //                    }
-        //                    else if block.center.x < previousBlock.center.x
-        //                    {
-        //                        block.center.x = previousBlock.center.x - 100
-        //                        previousBlock = block as! UIButton
-        //
-        //                    } else
-        //                    {
-        //                        previousBlock = block as! UIButton
-        //                    }
-        //                }
-        //            }
-        //        }
     }
     
     
     func deleteBlock(){
         
         selectedBlock.removeFromSuperview()
+        blockCount -= 1
 //        if self.view.subviews.last!.isKindOfClass(UIButton) {
 //            self.view.subviews.last!.removeFromSuperview()
 //
