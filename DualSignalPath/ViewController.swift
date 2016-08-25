@@ -9,11 +9,12 @@
 import UIKit
 
 class ViewController: UIViewController {
-    @IBOutlet weak var frontLine: UIView!
-    @IBOutlet weak var signalPath: UIView!
-    @IBOutlet weak var hollow: UIView!
-    @IBOutlet weak var backLine: UIView!
-    @IBOutlet weak var backArrow: UILabel!
+    var frontLine = UIView()
+    var signalPath = UIView()
+    var hollow = UIView()
+    var backLine = UIView()
+    var backArrow = UILabel()
+    
     
     var blockCount: Int = 0
     var signalPathX: CGFloat = 162
@@ -23,7 +24,7 @@ class ViewController: UIViewController {
     var selectedBlock = UIButton()
     
     var touchPosition = CGPoint()
-    var blockDragedLength = CGFloat()
+    //var blockDragedLength = CGFloat()
     
     var previousTheEndOfBackLineX = CGFloat()
     var changedLength = CGFloat()
@@ -44,6 +45,7 @@ class ViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        setViews()
         
     }
     
@@ -60,7 +62,30 @@ class ViewController: UIViewController {
         }
     }
 
-    
+    func setViews(){
+        frontLine.frame = CGRectMake(141, 100, 21, 3)
+        frontLine.backgroundColor = UIColor.grayColor()
+        view.addSubview(frontLine)
+
+        signalPath.frame = CGRectMake(162, 70, 40, 63)
+        signalPath.backgroundColor = UIColor.grayColor()
+        view.addSubview(signalPath)
+        
+        hollow.frame = CGRectMake(3, 3, 34, 57)
+        hollow.backgroundColor = UIColor.whiteColor()
+        signalPath.addSubview(hollow)
+        
+        backLine.frame = CGRectMake(202, 100, 100, 3)
+        backLine.backgroundColor = UIColor.grayColor()
+        view.addSubview(backLine)
+        
+        backArrow.frame = CGRectMake(300, 93, 29, 18)
+        backArrow.text = "➤"
+        //backArrow.adjustsFontSizeToFitWidth = YES
+        backArrow.textColor = UIColor.lightGrayColor()
+        view.addSubview(backArrow)
+        
+    }
     func addBlock(posX: CGFloat, posY: CGFloat){
         let block = UIButton()
         alertForInputName(block)
@@ -69,7 +94,6 @@ class ViewController: UIViewController {
         
         block.addTarget(self, action: #selector(ViewController.dragBlock(_:event:)), forControlEvents: UIControlEvents.TouchDragInside)
         block.addTarget(self, action: #selector(ViewController.touchBlock(_:)), forControlEvents: UIControlEvents.TouchUpInside)
-        
         self.view.addSubview(block)
         
     }
@@ -117,7 +141,7 @@ class ViewController: UIViewController {
             let deltaX: CGFloat = location.x - previousLocation.x
             let deltaY: CGFloat = location.y - previousLocation.y
             button.center = CGPointMake(button.center.x + deltaX, button.center.y + deltaY)
-            blockDragedLength = deltaX
+            //blockDragedLength = deltaX
             
             alignBlocks(button)
             makeFrontLineFlexible()
@@ -141,12 +165,12 @@ class ViewController: UIViewController {
     
     func calculateTheEndOfBackLineX(){
         theEndOfBackLineX = backLineX + backLine.frame.width
-        //print(theEndOfBackLineX)
+
     }
     
     func lengthChange(){
         changedLength = theEndOfBackLineX - previousTheEndOfBackLineX
-       // print(changedLength)
+
     }
     
     
@@ -175,7 +199,7 @@ class ViewController: UIViewController {
     
     func moveBackArrow(){
         let backArrowX = backLine.frame.origin.x + backLine.frame.width
-        backArrow.center = CGPoint(x: backArrowX, y: backLine.center.y)
+        backArrow.center = CGPoint(x: backArrowX + 10, y: backLine.center.y)
     }
     
     func getLinesLength(line: UIView, lengthOffset: CGFloat) -> CGFloat {
@@ -241,11 +265,11 @@ class ViewController: UIViewController {
     func alignBlocks(selfButton: UIButton){
         var previousBlock: UIButton = selfButton
         if blockCount > 1 {
+            
             for i in 1...blockCount {
+
                 for block in self.view.subviews {
                     if block.isKindOfClass(UIButton) && block.frame.width >= 80 && block != previousBlock && previousBlock.frame.intersects(block.frame) == true {
-                        
-                        //let tempX = previousBlock.center.x
                         
                         if block.center.x >= previousBlock.center.x
                         {
@@ -280,13 +304,13 @@ class ViewController: UIViewController {
     
     
     func deleteBlock(){
-        
         selectedBlock.removeFromSuperview()
-        blockCount -= 1
-//        if self.view.subviews.last!.isKindOfClass(UIButton) {
-//            self.view.subviews.last!.removeFromSuperview()
-//
-//        }
+        makeFrontLineFlexible()
+        makeSignalPathsFlexible()
+        makeBackLineFlexible()
+        moveBackArrow()
+        //setBlocksRelativePositionToPath(button)
+
     }
 }
 
