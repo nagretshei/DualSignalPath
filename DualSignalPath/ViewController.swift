@@ -61,6 +61,12 @@ class ViewController: UIViewController {
             
         }
     }
+    
+//    override func viewDidAppear(animated: Bool) {
+//        UIView.animateWithDuration(0.7, delay: 1.0, options: .CurveEaseOut, animations: {
+//            
+//            }, completion: nil)
+//    }
 
     func setViews(){
         frontLine.frame = CGRectMake(141, 100, 21, 3)
@@ -153,19 +159,19 @@ class ViewController: UIViewController {
     
     func setBlocksRelativePositionToPath(button: UIButton){
         lengthChange()
-        for block in self.view.subviews {
-            if block.isKindOfClass(UIButton) && block.frame.width >= 80 && block != button && block.center.x < button.center.x && block.frame.contains(button.frame.origin)
-            {
-                
-                    block.center.x = button.center.x + 1
-                
+        if changedLength == 0 {
+            for block in self.view.subviews {
+                if block.isKindOfClass(UIButton) && block.frame.width >= 80 && block != button && block.center.x < button.center.x && block.frame.contains(button.frame.origin)
+                {
+                    block.center.x = button.center.x + block.frame.width
+                }
             }
-        }
-        
-        for block in self.view.subviews {
-            if block.isKindOfClass(UIButton) && block.frame.width >= 80 && block != button && block.center.x >= button.center.x
-            {
-                block.center.x += changedLength
+        } else
+        {
+            for block in self.view.subviews {
+                if block.isKindOfClass(UIButton) && block.frame.width >= 80 && block != button && block.center.x >= button.center.x {
+                    block.center.x += changedLength
+                }
             }
         }
         
@@ -183,31 +189,44 @@ class ViewController: UIViewController {
     
     
     func makeFrontLineFlexible(){
-        frontLine.frame = CGRectMake(frontLine.frame.origin.x, frontLine.frame.origin.y, getLinesLength(frontLine, lengthOffset: 21), 3)
+        UIView.animateWithDuration(0.2, delay: 0, options: .CurveLinear , animations: {
+            self.frontLine.frame = CGRectMake(self.frontLine.frame.origin.x, self.frontLine.frame.origin.y, self.getLinesLength(self.frontLine, lengthOffset: 21), 3)
+            
+            }, completion: nil)
     }
     
     func makeSignalPathsFlexible(){
-        signalPathX = frontLine.frame.origin.x + frontLine.frame.width
-        signalPath.frame = CGRectMake(signalPathX, signalPath.frame.origin.y, getSingalPathLength(), 63)
-        hollow.frame = CGRectMake(hollow.frame.origin.x , hollow.frame.origin.y, signalPathLength - CGFloat(6), 57)
+        UIView.animateWithDuration(0.2, delay: 0, options: .CurveLinear , animations: {
+            self.signalPathX = self.frontLine.frame.origin.x + self.frontLine.frame.width
+            self.signalPath.frame = CGRectMake(self.signalPathX, self.signalPath.frame.origin.y, self.getSingalPathLength(), 63)
+            self.hollow.frame = CGRectMake(self.hollow.frame.origin.x , self.hollow.frame.origin.y, self.signalPathLength - CGFloat(6), 57)
+            }, completion: nil)
     }
     
     func makeBackLineFlexible(){
+        
         previousTheEndOfBackLineX = theEndOfBackLineX
         backLineX = signalPathX + signalPath.frame.width
+            
         if checkBlockOnPath(backLine) == true {
-            backLine.frame = CGRectMake(backLineX, backLine.frame.origin.y, getLinesLength(backLine, lengthOffset: 100) - 100, 3)
+            UIView.animateWithDuration(0.2, delay: 0, options: .CurveLinear , animations: {
+                self.backLine.frame = CGRectMake(self.backLineX, self.backLine.frame.origin.y, self.getLinesLength(self.backLine, lengthOffset: 100) - 100, 3)
+                }, completion: nil)
             calculateTheEndOfBackLineX()
 
         } else {
-            backLine.frame = CGRectMake(backLineX, backLine.frame.origin.y, getLinesLength(backLine, lengthOffset: 100), 3)
+            UIView.animateWithDuration(0.2, delay: 0, options: .CurveLinear , animations: {
+                self.backLine.frame = CGRectMake(self.backLineX, self.backLine.frame.origin.y, self.getLinesLength(self.backLine, lengthOffset: 100), 3)
+                }, completion: nil)
             calculateTheEndOfBackLineX()
         }
     }
     
     func moveBackArrow(){
         let backArrowX = backLine.frame.origin.x + backLine.frame.width
-        backArrow.center = CGPoint(x: backArrowX + 10, y: backLine.center.y)
+        UIView.animateWithDuration(0.2, delay: 0, options: .CurveLinear , animations: {
+            self.backArrow.center = CGPoint(x: backArrowX + 10, y: self.backLine.center.y)
+            }, completion: nil)
     }
     
     func getLinesLength(line: UIView, lengthOffset: CGFloat) -> CGFloat {
