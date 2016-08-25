@@ -24,7 +24,7 @@ class ViewController: UIViewController {
     var selectedBlock = UIButton()
     
     var touchPosition = CGPoint()
-    //var blockDragedLength = CGFloat()
+    var blockDragedLength = CGFloat()
     
     var previousTheEndOfBackLineX = CGFloat()
     var changedLength = CGFloat()
@@ -81,7 +81,6 @@ class ViewController: UIViewController {
         
         backArrow.frame = CGRectMake(300, 93, 29, 18)
         backArrow.text = "➤"
-        //backArrow.adjustsFontSizeToFitWidth = YES
         backArrow.textColor = UIColor.lightGrayColor()
         view.addSubview(backArrow)
         
@@ -141,9 +140,9 @@ class ViewController: UIViewController {
             let deltaX: CGFloat = location.x - previousLocation.x
             let deltaY: CGFloat = location.y - previousLocation.y
             button.center = CGPointMake(button.center.x + deltaX, button.center.y + deltaY)
-            //blockDragedLength = deltaX
+            blockDragedLength = deltaX
             
-            alignBlocks(button)
+            //alignBlocks(button)
             makeFrontLineFlexible()
             makeSignalPathsFlexible()
             makeBackLineFlexible()
@@ -155,7 +154,16 @@ class ViewController: UIViewController {
     func setBlocksRelativePositionToPath(button: UIButton){
         lengthChange()
         for block in self.view.subviews {
-            if block.isKindOfClass(UIButton) && block.frame.width >= 80 && block != button && block.center.x > button.center.x
+            if block.isKindOfClass(UIButton) && block.frame.width >= 80 && block != button && block.center.x < button.center.x && block.frame.contains(button.frame.origin)
+            {
+                
+                    block.center.x = button.center.x + 1
+                
+            }
+        }
+        
+        for block in self.view.subviews {
+            if block.isKindOfClass(UIButton) && block.frame.width >= 80 && block != button && block.center.x >= button.center.x
             {
                 block.center.x += changedLength
             }
@@ -264,29 +272,48 @@ class ViewController: UIViewController {
     
     func alignBlocks(selfButton: UIButton){
         var previousBlock: UIButton = selfButton
-        if blockCount > 1 {
-            
+        
+        //  block  | previous
+        // previous   |    block
+        
+        if blockCount > 1 && changedLength == 0 {
             for i in 1...blockCount {
-
                 for block in self.view.subviews {
                     if block.isKindOfClass(UIButton) && block.frame.width >= 80 && block != previousBlock && previousBlock.frame.intersects(block.frame) == true {
                         
+                        let midPoint = (block.center.x + previousBlock.center.x) / 2
+                        
                         if block.center.x >= previousBlock.center.x
                         {
-                            //previousBlock.center.x = block.center.x
-                            //previousBlock.center.x = touchPosition.x
+  
+                            //block.center.x -= blockDragedLength
+//                            if block.center.x == previousBlock.center.x {
+//                                print("+++++++++")
+//                                block.center.x += block.frame.width / 2
+//                                previousBlock.center.x -= block.frame.width / 2
+//                            }
                             block.center.x = previousBlock.center.x - block.frame.width
-                            //block.center.x = touchPosition.x - blockDragedLength
-                            
                             previousBlock = block as! UIButton
                             
                         }
                         else if block.center.x < previousBlock.center.x
                         {
+                            block.center.x = previousBlock.center.x + block.frame.width
                             //previousBlock.center.x = block.center.x
                             //previousBlock.center.x = touchPosition.x
-                            block.center.x = previousBlock.center.x + block.frame.width
+                            
+                           // block.center.x += blockDragedLength
+//                            print("========")
+//                             if block.center.x == previousBlock.center.x {
+//                                block.center.x -= block.frame.width / 2
+//                                previousBlock.center.x += block.frame.width / 2
+//
+//                            }
+                            
+                            
                             //block.center.x = touchPosition.x + blockDragedLength
+                            
+                            
                             previousBlock = block as! UIButton
                             
                         }
