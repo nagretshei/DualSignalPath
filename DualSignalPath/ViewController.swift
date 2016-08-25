@@ -22,6 +22,8 @@ class ViewController: UIViewController {
     var signalPathLength: CGFloat = 40
     var selectedBlock = UIButton()
     
+    var touchPosition = CGPoint()
+    
     var previousTheEndOfBackLineX = CGFloat()
     var changedLength = CGFloat()
     
@@ -49,6 +51,16 @@ class ViewController: UIViewController {
         // Dispose of any resources that can be recreated.
     }
     
+    override func touchesBegan(touches: Set<UITouch>, withEvent event: UIEvent?) {
+        if let touch = touches.first {
+            touchPosition = touch.locationInView(view)
+            print (touchPosition)
+            deSelect(touchPosition)
+            
+        }
+    }
+
+    
     func addBlock(posX: CGFloat, posY: CGFloat){
         let block = UIButton()
         alertForInputName(block)
@@ -75,10 +87,26 @@ class ViewController: UIViewController {
         
         self.presentViewController(alert, animated: true, completion: nil)
     }
+    
     func touchBlock(button: UIButton){
         selectedBlock = button
-        
+        selectedBlock.backgroundColor = UIColor.redColor()
+        for block in self.view.subviews {
+            if block.isKindOfClass(UIButton) && block.frame.width >= 80 && block != selectedBlock {
+                block.backgroundColor = UIColor.lightGrayColor()
+            }
+        }
     }
+    
+    func deSelect(touch: CGPoint){
+        for view in self.view.subviews {
+            if view.frame.contains(touch) == false {
+                selectedBlock.backgroundColor = UIColor.lightGrayColor()
+                
+            }
+        }
+    }
+    
     func dragBlock(button: UIButton, event: UIEvent){
         selectedBlock = button
         
