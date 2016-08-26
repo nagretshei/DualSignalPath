@@ -22,6 +22,8 @@ class ViewController: UIViewController {
     var theEndOfBackLineX: CGFloat = 302
     var signalPathLength: CGFloat = 40
     var selectedBlock = UIButton()
+    let blockSpace: CGFloat = 30
+    let blockWidth: CGFloat = 50
     
     var touchPosition = CGPoint()
     var blockDragedLength = CGFloat()
@@ -61,13 +63,8 @@ class ViewController: UIViewController {
             
         }
     }
-    
-//    override func viewDidAppear(animated: Bool) {
-//        UIView.animateWithDuration(0.7, delay: 1.0, options: .CurveEaseOut, animations: {
-//            
-//            }, completion: nil)
-//    }
 
+    // View
     func setViews(){
         frontLine.frame = CGRectMake(141, 100, 21, 3)
         frontLine.backgroundColor = UIColor.grayColor()
@@ -89,13 +86,58 @@ class ViewController: UIViewController {
         backArrow.text = "➤"
         backArrow.textColor = UIColor.lightGrayColor()
         view.addSubview(backArrow)
-        
     }
+    
+    func makeFrontLineFlexible(){
+        UIView.animateWithDuration(0.2, delay: 0, options: .CurveLinear , animations: {
+            self.frontLine.frame = CGRectMake(self.frontLine.frame.origin.x, self.frontLine.frame.origin.y, self.getLinesLength(self.frontLine, lengthOffset: 21), 3)
+            
+            }, completion: nil)
+    }
+    
+    func makeSignalPathsFlexible(){
+        UIView.animateWithDuration(0.2, delay: 0, options: .CurveLinear , animations: {
+            self.signalPathX = self.frontLine.frame.origin.x + self.frontLine.frame.width
+            self.signalPath.frame = CGRectMake(self.signalPathX, self.signalPath.frame.origin.y, self.getSingalPathLength(), 63)
+            self.hollow.frame = CGRectMake(self.hollow.frame.origin.x , self.hollow.frame.origin.y, self.signalPathLength - CGFloat(6), 57)
+            }, completion: nil)
+    }
+    
+    func makeBackLineFlexible(){
+        
+        previousTheEndOfBackLineX = theEndOfBackLineX
+        backLineX = signalPathX + signalPath.frame.width
+        let lengthOffset: CGFloat = 100
+        
+        if checkBlockOnPath(backLine) == true {
+            UIView.animateWithDuration(0.2, delay: 0, options: .CurveLinear , animations: {
+                self.backLine.frame = CGRectMake(self.backLineX, self.backLine.frame.origin.y, self.getLinesLength(self.backLine, lengthOffset: lengthOffset) - lengthOffset, 3)
+                }, completion: nil)
+            calculateTheEndOfBackLineX()
+            
+        } else {
+            UIView.animateWithDuration(0.2, delay: 0, options: .CurveLinear , animations: {
+                self.backLine.frame = CGRectMake(self.backLineX, self.backLine.frame.origin.y, self.getLinesLength(self.backLine, lengthOffset: lengthOffset), 3)
+                }, completion: nil)
+            calculateTheEndOfBackLineX()
+        }
+    }
+    
+    func moveBackArrow(){
+        let backArrowX = backLine.frame.origin.x + backLine.frame.width
+        UIView.animateWithDuration(0.2, delay: 0, options: .CurveLinear , animations: {
+            self.backArrow.center = CGPoint(x: backArrowX + 10, y: self.backLine.center.y)
+            }, completion: nil)
+    }
+
+    
+    // Controller
     func addBlock(posX: CGFloat, posY: CGFloat){
         let block = UIButton()
         alertForInputName(block)
-        block.frame = CGRectMake(posX, posY, 80, 40)
+        block.frame = CGRectMake(posX, posY, blockWidth, 40)
         block.backgroundColor = UIColor.grayColor()
+        block.titleLabel!.adjustsFontSizeToFitWidth = true
         
         block.addTarget(self, action: #selector(ViewController.dragBlock(_:event:)), forControlEvents: UIControlEvents.TouchDragInside)
         block.addTarget(self, action: #selector(ViewController.touchBlock(_:)), forControlEvents: UIControlEvents.TouchUpInside)
@@ -117,11 +159,21 @@ class ViewController: UIViewController {
         self.presentViewController(alert, animated: true, completion: nil)
     }
     
+    func deleteBlock(){
+        selectedBlock.removeFromSuperview()
+        makeFrontLineFlexible()
+        makeSignalPathsFlexible()
+        makeBackLineFlexible()
+        moveBackArrow()
+        //setBlocksRelativePositionToPath(button)
+        
+    }
+    
     func touchBlock(button: UIButton){
         selectedBlock = button
         selectedBlock.backgroundColor = UIColor.redColor()
         for block in self.view.subviews {
-            if block.isKindOfClass(UIButton) && block.frame.width >= 80 && block != selectedBlock {
+            if block.isKindOfClass(UIButton) && block.frame.width == blockWidth && block != selectedBlock {
                 block.backgroundColor = UIColor.lightGrayColor()
             }
         }
@@ -147,8 +199,7 @@ class ViewController: UIViewController {
             let deltaY: CGFloat = location.y - previousLocation.y
             button.center = CGPointMake(button.center.x + deltaX, button.center.y + deltaY)
             blockDragedLength = deltaX
-            
-            //alignBlocks(button)
+
             makeFrontLineFlexible()
             makeSignalPathsFlexible()
             makeBackLineFlexible()
@@ -157,20 +208,41 @@ class ViewController: UIViewController {
         }
     }
     
+    // Model
     func setBlocksRelativePositionToPath(button: UIButton){
+        let buttonRightSideX: CGFloat = button.frame.origin.x + blockWidth
+        //let buttonLeftMidlePoint: CGPoint = CGPoint(x: button.frame.origin.x, y: button.center.y)
+        let accuracy : CGFloat = 5
+        let rightReferencePoint = CGPoint(x: buttonRightSideX - accuracy, y: button.center.y)
+        let leftReferencePoint = CGPoint(x: button.frame.origin.x + accuracy, y: button.center.y)
         lengthChange()
         if changedLength == 0 {
             for block in self.view.subviews {
-                if block.isKindOfClass(UIButton) && block.frame.width >= 80 && block != button && block.center.x < button.center.x && block.frame.contains(button.frame.origin)
-                {
-                    block.center.x = button.center.x + block.frame.width
+                if block.isKindOfClass(UIButton) && block.frame.width == blockWidth && block != button && button.frame.contains(block.center){
+                    
+                    if block.center.x < button.center.x && block.frame.contains(rightReferencePoint) && blockDragedLength < 0
+                        
+                    {
+                        UIView.animateWithDuration(0.2, delay: 0, options: .CurveLinear , animations: {
+                            block.center = CGPoint(x: block.center.x + self.blockSpace + block.frame.width, y: block.center.y)
+                            }, completion: nil)
+                    }
+                    
+                    else if block.center.x > button.center.x && block.frame.contains(leftReferencePoint) && blockDragedLength > 0
+                    {
+                        UIView.animateWithDuration(0.2, delay: 0, options: .CurveLinear , animations: {
+                            block.center = CGPoint(x: block.center.x - self.blockSpace - block.frame.width, y: block.center.y)
+                            }, completion: nil)
+                    }
                 }
             }
         } else
         {
             for block in self.view.subviews {
-                if block.isKindOfClass(UIButton) && block.frame.width >= 80 && block != button && block.center.x >= button.center.x {
-                    block.center.x += changedLength
+                if block.isKindOfClass(UIButton) && block.frame.width == blockWidth && block != button && block.center.x >= button.center.x
+                {  UIView.animateWithDuration(0.2, delay: 0, options: .CurveLinear , animations: {
+                    block.center.x += self.changedLength
+                    }, completion: nil)
                 }
             }
         }
@@ -187,48 +259,6 @@ class ViewController: UIViewController {
 
     }
     
-    
-    func makeFrontLineFlexible(){
-        UIView.animateWithDuration(0.2, delay: 0, options: .CurveLinear , animations: {
-            self.frontLine.frame = CGRectMake(self.frontLine.frame.origin.x, self.frontLine.frame.origin.y, self.getLinesLength(self.frontLine, lengthOffset: 21), 3)
-            
-            }, completion: nil)
-    }
-    
-    func makeSignalPathsFlexible(){
-        UIView.animateWithDuration(0.2, delay: 0, options: .CurveLinear , animations: {
-            self.signalPathX = self.frontLine.frame.origin.x + self.frontLine.frame.width
-            self.signalPath.frame = CGRectMake(self.signalPathX, self.signalPath.frame.origin.y, self.getSingalPathLength(), 63)
-            self.hollow.frame = CGRectMake(self.hollow.frame.origin.x , self.hollow.frame.origin.y, self.signalPathLength - CGFloat(6), 57)
-            }, completion: nil)
-    }
-    
-    func makeBackLineFlexible(){
-        
-        previousTheEndOfBackLineX = theEndOfBackLineX
-        backLineX = signalPathX + signalPath.frame.width
-            
-        if checkBlockOnPath(backLine) == true {
-            UIView.animateWithDuration(0.2, delay: 0, options: .CurveLinear , animations: {
-                self.backLine.frame = CGRectMake(self.backLineX, self.backLine.frame.origin.y, self.getLinesLength(self.backLine, lengthOffset: 100) - 100, 3)
-                }, completion: nil)
-            calculateTheEndOfBackLineX()
-
-        } else {
-            UIView.animateWithDuration(0.2, delay: 0, options: .CurveLinear , animations: {
-                self.backLine.frame = CGRectMake(self.backLineX, self.backLine.frame.origin.y, self.getLinesLength(self.backLine, lengthOffset: 100), 3)
-                }, completion: nil)
-            calculateTheEndOfBackLineX()
-        }
-    }
-    
-    func moveBackArrow(){
-        let backArrowX = backLine.frame.origin.x + backLine.frame.width
-        UIView.animateWithDuration(0.2, delay: 0, options: .CurveLinear , animations: {
-            self.backArrow.center = CGPoint(x: backArrowX + 10, y: self.backLine.center.y)
-            }, completion: nil)
-    }
-    
     func getLinesLength(line: UIView, lengthOffset: CGFloat) -> CGFloat {
         var totalLenghOfLine: CGFloat = lengthOffset
         var blockCountsOnLine: Int = 0
@@ -240,7 +270,7 @@ class ViewController: UIViewController {
                 blockCountsOnLine += 1
             }
         }
-        let result: CGFloat = totalLenghOfLine + CGFloat(30 * blockCountsOnLine)
+        let result: CGFloat = totalLenghOfLine + blockSpace * CGFloat(blockCountsOnLine)
         return result
     }
     
@@ -268,9 +298,9 @@ class ViewController: UIViewController {
         
         var result = CGFloat()
         if totalLenghOfBlocksForFirstPath >= totalLenghOfBlocksForSecondPath {
-            result = totalLenghOfBlocksForFirstPath + CGFloat(30 * blockCountsOnFirstPath)
+            result = totalLenghOfBlocksForFirstPath + blockSpace * CGFloat(blockCountsOnFirstPath)
         } else {
-            result = totalLenghOfBlocksForSecondPath + CGFloat(30 * blockCountsOnSecondPath)
+            result = totalLenghOfBlocksForSecondPath + blockSpace * CGFloat(blockCountsOnSecondPath)
         }
         
         signalPathLength = result
@@ -287,76 +317,6 @@ class ViewController: UIViewController {
             }
         }
         return result
-    }
-    
-    func alignBlocks(selfButton: UIButton){
-        var previousBlock: UIButton = selfButton
-        
-        //  block  | previous
-        // previous   |    block
-        
-        if blockCount > 1 && changedLength == 0 {
-            for i in 1...blockCount {
-                for block in self.view.subviews {
-                    if block.isKindOfClass(UIButton) && block.frame.width >= 80 && block != previousBlock && previousBlock.frame.intersects(block.frame) == true {
-                        
-                        let midPoint = (block.center.x + previousBlock.center.x) / 2
-                        
-                        if block.center.x >= previousBlock.center.x
-                        {
-  
-                            //block.center.x -= blockDragedLength
-//                            if block.center.x == previousBlock.center.x {
-//                                print("+++++++++")
-//                                block.center.x += block.frame.width / 2
-//                                previousBlock.center.x -= block.frame.width / 2
-//                            }
-                            block.center.x = previousBlock.center.x - block.frame.width
-                            previousBlock = block as! UIButton
-                            
-                        }
-                        else if block.center.x < previousBlock.center.x
-                        {
-                            block.center.x = previousBlock.center.x + block.frame.width
-                            //previousBlock.center.x = block.center.x
-                            //previousBlock.center.x = touchPosition.x
-                            
-                           // block.center.x += blockDragedLength
-//                            print("========")
-//                             if block.center.x == previousBlock.center.x {
-//                                block.center.x -= block.frame.width / 2
-//                                previousBlock.center.x += block.frame.width / 2
-//
-//                            }
-                            
-                            
-                            //block.center.x = touchPosition.x + blockDragedLength
-                            
-                            
-                            previousBlock = block as! UIButton
-                            
-                        }
-                            
-                        else
-                        {
-                            previousBlock = block as! UIButton
-                            
-                        }
-                    }
-                }
-            }
-        }
-    }
-    
-    
-    func deleteBlock(){
-        selectedBlock.removeFromSuperview()
-        makeFrontLineFlexible()
-        makeSignalPathsFlexible()
-        makeBackLineFlexible()
-        moveBackArrow()
-        //setBlocksRelativePositionToPath(button)
-
     }
 }
 
