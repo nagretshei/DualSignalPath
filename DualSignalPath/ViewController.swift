@@ -86,27 +86,6 @@ class ViewController: UIViewController {
         }
     }
     
-//    override func touchesMoved(touches: Set<UITouch>, withEvent event: UIEvent?) {
-//        if let touch = touches.first {
-//            let currentPoint = touch.locationInView(view)
-//            // do something with your currentPoint
-//        print("moving")
-//        }
-//        
-//        
-//       alignEverything()
-//    }
-    
-//    override func touchesEnded(touches: Set<UITouch>, withEvent event: UIEvent?) {
-//        if let touch = touches.first {
-//            touchPosition = touch.locationInView(view)
-//            print("end touch")
-//            
-//        }
-//        alignEverything()
-//    }
-
-    
     // View
     func alignEverything(){
         alignArrayOfBlocks(blockOnFirstPath)
@@ -242,12 +221,6 @@ class ViewController: UIViewController {
         }
     }
     
-//    func endDragBlock(button: UIButton) {
-//        print("touch moved")
-//        alignEverything()
-//    }
-    
-    
     func deSelect(touch: CGPoint){
         for view in self.view.subviews {
             if view.frame.contains(touch) == false {
@@ -277,14 +250,14 @@ class ViewController: UIViewController {
             
             if  button.center.y <= signalPath.frame.origin.y + signalPath.frame.height / 2
             {
-                UIView.animateWithDuration(0.3, delay: 0, options: .TransitionCurlUp , animations: {
+                UIView.animateWithDuration(0.2, delay: 0, options: .TransitionCurlUp , animations: {
                     self.alignArrayOfBlocks(self.blockOnSecondPath)
                     
                     }, completion: nil)
                 
             } else if button.center.y > signalPath.frame.origin.y + signalPath.frame.height / 2
             {
-                UIView.animateWithDuration(0.3, delay: 0, options: .TransitionCurlUp , animations: {
+                UIView.animateWithDuration(0.2, delay: 0, options: .TransitionCurlUp , animations: {
                     self.alignArrayOfBlocks(self.blockOnFirstPath)
                     
                     }, completion: nil)
@@ -333,22 +306,6 @@ class ViewController: UIViewController {
             }
             
         }
-//                else if block.isKindOfClass(UIButton) && block.frame.width == blockWidth && block != button && block.frame.contains(button.center){
-//
-//                        // 垂直插入
-//                        if block.center.x >= button.center.x
-//                        {
-//                            UIView.animateWithDuration(0.2, delay: 0, options: .CurveLinear , animations: {
-//                                
-//                                block.center.x += self.blockWidth + self.blockSpace
-//                                
-//                                }, completion: nil)
-//                            
-//                        }
-//                    
-//                }
-                
-
         
         else if totalChangedLength != 0
         {
@@ -486,6 +443,7 @@ class ViewController: UIViewController {
             let orderedViews = viewsDictionary.sort { $0.0 < $1.0 }
             
             if views == blockOnSecondPath || views == blockOnFirstPath {
+                
                 orderedViews[0].1.center.x = signalPath.frame.origin.x + CGFloat(50)
                 
                 for i in 0...orderedViews.count - 1 {
