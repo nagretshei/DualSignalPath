@@ -86,6 +86,27 @@ class ViewController: UIViewController {
         }
     }
     
+//    override func touchesMoved(touches: Set<UITouch>, withEvent event: UIEvent?) {
+//        if let touch = touches.first {
+//            let currentPoint = touch.locationInView(view)
+//            // do something with your currentPoint
+//        print("moving")
+//        }
+//        
+//        
+//       alignEverything()
+//    }
+    
+//    override func touchesEnded(touches: Set<UITouch>, withEvent event: UIEvent?) {
+//        if let touch = touches.first {
+//            touchPosition = touch.locationInView(view)
+//            print("end touch")
+//            
+//        }
+//        alignEverything()
+//    }
+
+    
     // View
     func alignEverything(){
         alignArrayOfBlocks(blockOnFirstPath)
@@ -177,7 +198,12 @@ class ViewController: UIViewController {
         block.titleLabel!.adjustsFontSizeToFitWidth = true
         
         block.addTarget(self, action: #selector(ViewController.dragBlock(_:event:)), forControlEvents: UIControlEvents.TouchDragInside)
+        
+//        block.addTarget(self, action: #selector(ViewController.endDragBlock(_:)), forControlEvents: UIControlEvents.TouchDragExit)
+        
         block.addTarget(self, action: #selector(ViewController.touchBlock(_:)), forControlEvents: UIControlEvents.TouchUpInside)
+        
+  
         self.view.addSubview(block)
         
     }
@@ -216,6 +242,12 @@ class ViewController: UIViewController {
         }
     }
     
+//    func endDragBlock(button: UIButton) {
+//        print("touch moved")
+//        alignEverything()
+//    }
+    
+    
     func deSelect(touch: CGPoint){
         for view in self.view.subviews {
             if view.frame.contains(touch) == false {
@@ -241,6 +273,24 @@ class ViewController: UIViewController {
             makeBackLineFlexible()
             moveBackArrow()
             setBlocksRelativePositionToPath(button)
+            
+            
+            if  button.center.y <= signalPath.frame.origin.y + signalPath.frame.height / 2
+            {
+                UIView.animateWithDuration(0.3, delay: 0, options: .TransitionCurlUp , animations: {
+                    self.alignArrayOfBlocks(self.blockOnSecondPath)
+                    
+                    }, completion: nil)
+                
+            } else if button.center.y > signalPath.frame.origin.y + signalPath.frame.height / 2
+            {
+                UIView.animateWithDuration(0.3, delay: 0, options: .TransitionCurlUp , animations: {
+                    self.alignArrayOfBlocks(self.blockOnFirstPath)
+                    
+                    }, completion: nil)
+                
+            }
+            
         }
     }
     
@@ -304,8 +354,10 @@ class ViewController: UIViewController {
         {
             for block in self.view.subviews {
                 if block.isKindOfClass(UIButton) && block.frame.width == blockWidth && block != button && block.center.x >= button.center.x
+                    
                 {  UIView.animateWithDuration(0.2, delay: 0, options: .CurveLinear , animations: {
                     block.center.x += self.totalChangedLength
+                    
                     }, completion: nil)
                 }
                 
@@ -374,7 +426,7 @@ class ViewController: UIViewController {
                 }
             }
         }
-        print (blockOnFrontLine.count)
+        //print (blockOnFrontLine.count)
         let result: CGFloat = totalLenghOfLine + blockSpace * CGFloat(blockCountsOnLine)
         return result
     }
@@ -419,7 +471,7 @@ class ViewController: UIViewController {
     }
     
     func alignArrayOfBlocks(views: [UIView]){
-        print(blockOnFrontLine.count)
+        //print(blockOnFrontLine.count)
         var viewsDictionary = [CGFloat: UIView]()
 
         
