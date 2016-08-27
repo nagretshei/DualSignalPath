@@ -87,7 +87,7 @@ class ViewController: UIViewController {
     
     // View
     func alignEverything(){
-        
+        resetAllLinesLengthAndCulculatesBlocks()
         alignArrayOfBlocks(blockOnFirstPath)
         alignArrayOfBlocks(blockOnSecondPath)
         alignArrayOfBlocks(blockOnFrontLine)
@@ -160,11 +160,11 @@ class ViewController: UIViewController {
         
         backLineX = signalPath.frame.origin.x + signalPath.frame.width
         
-        let lengthOffset: CGFloat = 100
+        let lengthOffset: CGFloat = 90
         
         if checkBlockOnPath(backLine) == true {
             UIView.animateWithDuration(0.2, delay: 0, options: .CurveLinear , animations: {
-                self.backLine.frame = CGRectMake(self.backLineX, self.backLine.frame.origin.y, self.getLinesLength(self.backLine, lengthOffset: lengthOffset) - lengthOffset, 3)
+                self.backLine.frame = CGRectMake(self.backLineX, self.backLine.frame.origin.y, self.getLinesLength(self.backLine, lengthOffset: lengthOffset) , 3)
                 }, completion: nil)
             theEndOfBackLineX = backLineX + backLine.frame.width
         } else {
@@ -217,7 +217,7 @@ class ViewController: UIViewController {
             selectedBlock.removeFromSuperview()
         }
         
-        resetAllLinesLengthAndCulculatesBlocks()
+        //resetAllLinesLengthAndCulculatesBlocks()
 //        makeFrontLineFlexible()
 //        makeSignalPathsFlexible()
 //        makeBackLineFlexible()
@@ -283,7 +283,8 @@ class ViewController: UIViewController {
             }
             else if  button.frame.intersects(resetZone.frame) {
                 UIView.animateWithDuration(0.2, delay: 0, options: .TransitionCurlUp , animations: {
-                   self.makeSignalPathsFlexible()
+                   //self.makeSignalPathsFlexible()
+                    self.resetAllLinesLengthAndCulculatesBlocks()
                     
                     }, completion: nil)
                 
@@ -471,7 +472,7 @@ class ViewController: UIViewController {
                 orderedViews[0].1.center.x = backLine.frame.origin.x + CGFloat(blockSpace)
                 
                 for i in 0...orderedViews.count - 1 {
-                    orderedViews[i].1.center.x = orderedViews[0].1.center.x + CGFloat(i) * (blockWidth + blockSpace)
+                    orderedViews[i].1.center.x = orderedViews[0].1.center.x + CGFloat(i) * (blockWidth + blockSpace) + 9
                     orderedViews[i].1.center.y = backLine.center.y
                 }
                 
