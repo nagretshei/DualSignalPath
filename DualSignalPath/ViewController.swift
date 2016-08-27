@@ -45,7 +45,7 @@ class ViewController: UIViewController {
     var blockOnFrontLine = [UIView]()
     var blockOnBackLine = [UIView]()
     
-    //var previousFrontLineLength = CGFloat()
+    var previousFrontLineLength = CGFloat()
     var previousBackLineLength = CGFloat()
     
     var frontLineChangedLength = CGFloat()
@@ -61,6 +61,8 @@ class ViewController: UIViewController {
         addBlock(x, posY: y)
         blockCount += 1
         alignEverything()
+        
+        print(blockOnFrontLine.count)
     }
     
     @IBAction func deleteBlock(sender: UIButton) {
@@ -95,7 +97,7 @@ class ViewController: UIViewController {
     // View
     
     func setViews(){
-        frontLine.frame = CGRectMake(141, 100, 21, 3)
+        frontLine.frame = CGRectMake(141, 101, 21, 3)
         frontLine.backgroundColor = UIColor.grayColor()
         view.addSubview(frontLine)
         
@@ -150,13 +152,17 @@ class ViewController: UIViewController {
     func makeFrontLineFlexible(){
         previousTheEndOfFrontLineX = theEndOfFrontLineX
         
+        let length = getFrontLinesLength()
+        
+        let frontLineX = frontLine.frame.origin.x
+        
         UIView.animateWithDuration(0.2, delay: 0, options: .CurveLinear , animations: {
             
-            self.frontLine.frame = CGRectMake(self.frontLine.frame.origin.x, self.frontLine.frame.origin.y, self.getLinesLength(self.frontLine), 3)
+            self.frontLine.frame = CGRectMake(frontLineX, self.frontLine.frame.origin.y, length, 3)
             
             }, completion: nil)
         
-        theEndOfFrontLineX = frontLine.frame.origin.x + backLine.frame.width
+        theEndOfFrontLineX = frontLineX + length
     }
     
     func makeSignalPathsFlexible(){
@@ -179,7 +185,7 @@ class ViewController: UIViewController {
         
         previousTheEndOfBackLineX = theEndOfBackLineX
         
-        let length = getLinesLength(backLine)
+        let length = getBackLinesLength()
         
         backLineX = signalPath.frame.origin.x + signalPath.frame.width
         
@@ -191,23 +197,6 @@ class ViewController: UIViewController {
         
         theEndOfBackLineX = backLineX + backLine.frame.width
         
-        
-//        if checkBlockOnPath(backLine) == true {
-//            UIView.animateWithDuration(0.2, delay: 0, options: .CurveLinear , animations: {
-//                
-//                self.backLine.frame = CGRectMake(self.backLineX, self.backLine.frame.origin.y, self.getLinesLength(self.backLine) , 3)
-//                
-//                }, completion: nil)
-//            theEndOfBackLineX = backLineX + backLine.frame.width
-//            
-//        } else {
-//            UIView.animateWithDuration(0.2, delay: 0, options: .CurveLinear , animations: {
-//                
-//                self.backLine.frame = CGRectMake(self.backLineX, self.backLine.frame.origin.y, self.getLinesLength(self.backLine), 3)
-//                
-//                }, completion: nil)
-//            theEndOfBackLineX = backLineX + backLine.frame.width
-//        }
     }
     
     func moveBackArrow(){
@@ -286,10 +275,7 @@ class ViewController: UIViewController {
             let deltaY: CGFloat = location.y - previousLocation.y
             button.center = CGPointMake(button.center.x + deltaX, button.center.y + deltaY)
             blockDragedLength = deltaX
-//            makeFrontLineFlexible()
-//            makeSignalPathsFlexible()
-//            makeBackLineFlexible()
-//            moveBackArrow()
+
             resetAllLinesLengthAndCulculatesBlocks()
             setBlocksRelativePositionToPath(button)
             
@@ -328,16 +314,18 @@ class ViewController: UIViewController {
         let leftReferencePoint = CGPoint(x: button.frame.origin.x + accuracy, y: button.center.y)
         findLengthChangeOfLines()
         if totalChangedLength == 0 {
-            //insertNewBlocks(button)
+            print("case one")
             
             for block in self.view.subviews {
-                
+
                 if block.isKindOfClass(UIButton) && block.frame.width == blockWidth && block != button && button.frame.contains(block.center){
                     
                     // 水平左右互換
                     if block.center.x < button.center.x && block.frame.contains(rightReferencePoint) && blockDragedLength < 0
+                        
 
                     {
+                        print("1-1")
                         UIView.animateWithDuration(0.2, delay: 0, options: .CurveLinear , animations: {
                             block.center = CGPoint(x: block.center.x + self.blockSpace + block.frame.width - 1, y: block.center.y)
                             
@@ -345,72 +333,146 @@ class ViewController: UIViewController {
                             }, completion: nil)
                         putOutSideBlocksBackToSignalPath()
                         putOutSideBlocksBackToBackLine()
+                        
                         alignEverything()
                         
                     }
                         
                     else if block.center.x > button.center.x && block.frame.contains(leftReferencePoint) && blockDragedLength > 0
                     {
+                        print("1-2")
                         UIView.animateWithDuration(0.2, delay: 0, options: .CurveLinear , animations: {
                             block.center = CGPoint(x: block.center.x - self.blockSpace - block.frame.width + 1, y: block.center.y)
-                            
-                            //self.alignBlocks(button)
+                        
                             }, completion: nil)
                         putOutSideBlocksBackToSignalPath()
                         putOutSideBlocksBackToBackLine()
+        
                         alignEverything()
-                        
                     }
                     
+                    else {
+                        
+                        if block.isKindOfClass(UIButton) && block.frame.width == blockWidth && block != button && block.center.x >= button.center.x && block.frame.intersects(backLine.frame) {
+                            
+                            print("case 1-3")
+                            
+                            if backLineChangedLength > 0 {
+                                UIView.animateWithDuration(0.2, delay: 0, options: .CurveLinear , animations: {
+                                    block.center.x += self.backLineChangedLength
+                                    
+                                    }, completion: nil)
+                                
+                            } else if backLineChangedLength < 0 {
+                                UIView.animateWithDuration(0.4, delay: 0, options: .CurveLinear , animations: {
+                                    block.center.x += self.backLineChangedLength + 1
+                                    self.alignEverything()
+                                    }, completion: nil)
+                                
+                            }
+                            
+                        }
+                        print("case 1-4")
+                    }
                 }
             }
-            
         }
         
         // 垂直插入移除新方塊
         else if totalChangedLength != 0
         {
+            print("case two")
             for block in self.view.subviews {
-                if block.isKindOfClass(UIButton) && block.frame.width == blockWidth && block != button && block.center.x >= button.center.x && block.frame.intersects(backLine.frame) {
+                
 
-                    if backLineChangedLength > 0 {
-                        UIView.animateWithDuration(0.2, delay: 0, options: .CurveLinear , animations: {
-                            block.center.x += self.backLineChangedLength
-                            
-                            }, completion: nil)
-                        
-                    } else if backLineChangedLength < 0 {
-                        UIView.animateWithDuration(0.4, delay: 0, options: .CurveLinear , animations: {
-                            block.center.x += self.backLineChangedLength + 1
-                            self.alignEverything()
-                            }, completion: nil)
-                        
-                    }
-
-                }
-                    
-                else if block.isKindOfClass(UIButton) && block.frame.width == blockWidth && block != button && block.center.x >= button.center.x {
-                    
+                if block.isKindOfClass(UIButton) && block.frame.width == blockWidth && block != button && block.center.x >= button.center.x {
+                    print("case 2-2")
                     if totalChangedLength > 0 {
+                        print("case 2-2-1")
                         UIView.animateWithDuration(0.2, delay: 0, options: .CurveLinear , animations: {
                             block.center.x += self.totalChangedLength
                             
+                            //self.putOutSideBlocksBackToFrontkLine()
                             self.putOutSideBlocksBackToBackLine()
+                            //self.alignEverything()
                             
                             }, completion: nil)
                         
                     } else if totalChangedLength < 0 {
-                        UIView.animateWithDuration(0.4, delay: 0, options: .CurveLinear , animations: {
-                            block.center.x += self.totalChangedLength + 1
-                            self.putOutSideBlocksBackToBackLine()
-                            self.alignEverything()
-   
-                            }, completion: nil)
                         
+                        if frontLineChangedLength < 0 && block.frame.intersects(frontLine.frame) {
+                            print("case 2-3-2")
+                            
+                            UIView.animateWithDuration(0.4, delay: 0, options: .CurveLinear , animations: {
+                                block.center.x += self.frontLineChangedLength + 1
+                                self.putOutSideBlocksBackToFrontkLine()
+                                //self.putOutSideBlocksBackToBackLine()
+                                self.alignEverything()
+                                }, completion: nil)
+                            //
+                        }
+                        
+                        else if backLineChangedLength < 0 && block.frame.intersects(backLine.frame) {
+                            print("case 2-3-1")
+                            
+                            UIView.animateWithDuration(0.4, delay: 0, options: .CurveLinear , animations: {
+                                block.center.x += self.backLineChangedLength + 1
+                                //self.putOutSideBlocksBackToFrontkLine()
+                                self.putOutSideBlocksBackToBackLine()
+                                self.alignEverything()
+                                }, completion: nil)
+                            
+                        }
+//                            else if frontLineChangedLength < 0 && block.frame.intersects(frontLine.frame) {
+//                            print("case 2-3-2")
+//                            
+//                            UIView.animateWithDuration(0.4, delay: 0, options: .CurveLinear , animations: {
+//                                block.center.x += self.backLineChangedLength + 1
+//                                self.putOutSideBlocksBackToFrontkLine()
+//                                //self.putOutSideBlocksBackToBackLine()
+//                                self.alignEverything()
+//                                }, completion: nil)
+////
+//                        }
+                        
+//                        else {
+//                        print("case 2-3-3")
+//                        UIView.animateWithDuration(0.4, delay: 0, options: .CurveLinear , animations: {
+//                            block.center.x += self.totalChangedLength + 1
+//                      
+//                            self.alignEverything()
+//   
+//                            }, completion: nil)
+//                        }
                     }
                     
                 }
-
+//                else if block.isKindOfClass(UIButton) && block.frame.width == blockWidth && block != button && block.center.x >= button.center.x && block.frame.intersects(backLine.frame) {
+//                        
+//                        print("case 2-1")
+//                        
+//                        if backLineChangedLength > 0 {
+//                            UIView.animateWithDuration(0.2, delay: 0, options: .CurveLinear , animations: {
+//                                block.center.x += self.backLineChangedLength
+//                                self.putOutSideBlocksBackToFrontkLine()
+//                                self.putOutSideBlocksBackToBackLine()
+//                                
+//                                }, completion: nil)
+//                            
+//                        } else if backLineChangedLength < 0 {
+//                            UIView.animateWithDuration(0.4, delay: 0, options: .CurveLinear , animations: {
+//                                block.center.x += self.backLineChangedLength + 1
+//                                self.putOutSideBlocksBackToFrontkLine()
+//                                self.putOutSideBlocksBackToBackLine()
+//                                self.alignEverything()
+//                                }, completion: nil)
+//                            
+//                        }
+//                        else {
+//                            print("case 2-1-e")
+//                        }
+//                        
+//                }
                 
             }
 
@@ -437,6 +499,40 @@ class ViewController: UIViewController {
         }
         
     }
+ 
+
+
+    
+    func putOutSideBlocksBackToFrontkLine(){
+        for block in self.view.subviews {
+            
+            if block.isKindOfClass(UIButton) && block.frame.width == blockWidth {
+                
+                let rightSide = block.frame.origin.x + block.frame.width
+                
+                if block.center.y == frontLine.center.y {
+                    // on right side
+                    
+                    if block.frame.origin.x > frontLine.frame.origin.x + frontLine.frame.width && block.frame.origin.x + block.frame.width < signalPath.center.x {
+                        block.center.x = frontLine.frame.origin.x + frontLine.frame.width - 1
+                        
+                        resetAllLinesLengthAndCulculatesBlocks()
+                        alignArrayOfBlocks(blockOnFrontLine)
+                    }
+                
+     
+                    else if rightSide < frontLine.frame.origin.x  {
+                            
+                            block.center.x = backLine.frame.origin.x + 1
+                            resetAllLinesLengthAndCulculatesBlocks()
+                            alignArrayOfBlocks(blockOnFrontLine)
+                        
+                    }
+                }
+            }
+        }
+    }
+
     func putOutSideBlocksBackToSignalPath(){
         for block in self.view.subviews {
             
@@ -489,23 +585,29 @@ class ViewController: UIViewController {
         for block in self.view.subviews {
             
             if block.isKindOfClass(UIButton) && block.frame.width == blockWidth  {
+                let rightSide = block.frame.origin.x + block.frame.width
               
-                if block.center.y == backLine.center.y && block.center.x > backLine.frame.origin.x {
+                if block.center.y == backLine.center.y {
+                    //&& block.center.x > backLine.frame.origin.x
                     // on right side
-                    if block.frame.origin.x + block.frame.width > backLine.frame.origin.x + backLine.frame.width {
+                    
+                    if block.frame.origin.x > backLine.frame.origin.x + backLine.frame.width {
                         block.center.x = backLine.frame.origin.x + backLine.frame.width - 1
                         
                         resetAllLinesLengthAndCulculatesBlocks()
                         alignArrayOfBlocks(blockOnBackLine)
                     }
-                        
+                    
                     // on left side
-                    else if block.center.y == backLine.center.y && block.frame.origin.x + block.frame.width < backLine.frame.origin.x {
+                    
+                    else if rightSide < backLine.frame.origin.x && block.frame.origin.x > signalPath.center.x  {
+                        
+                        
                         block.center.x = backLine.frame.origin.x + 1
                         resetAllLinesLengthAndCulculatesBlocks()
                         alignArrayOfBlocks(blockOnBackLine)
-                        
                     }
+                    
                 }
             }
         }
@@ -543,7 +645,8 @@ class ViewController: UIViewController {
             }
                 
             else if views == blockOnFrontLine {
-                orderedViews[0].1.center.x = frontLine.frame.origin.x + CGFloat(blockSpace)
+                
+                orderedViews[0].1.center.x = frontLine.frame.origin.x + CGFloat(blockSpace) + blockWidth / 2
                 
                 for i in 0...orderedViews.count - 1 {
                     orderedViews[i].1.center.x = orderedViews[0].1.center.x + CGFloat(i) * (blockWidth + blockSpace)
@@ -552,10 +655,10 @@ class ViewController: UIViewController {
             }
                 
             else if views == blockOnBackLine {
-                orderedViews[0].1.center.x = backLine.frame.origin.x + CGFloat(blockSpace)
+                orderedViews[0].1.center.x = backLine.frame.origin.x + CGFloat(blockSpace) + 6
                 
                 for i in 0...orderedViews.count - 1 {
-                    orderedViews[i].1.center.x = orderedViews[0].1.center.x + CGFloat(i) * (blockWidth + blockSpace) + 6
+                    orderedViews[i].1.center.x = orderedViews[0].1.center.x + CGFloat(i) * (blockWidth + blockSpace)
                     orderedViews[i].1.center.y = backLine.center.y
                 }
                 
@@ -584,71 +687,47 @@ class ViewController: UIViewController {
         
     }
     
-    
-//    func getLinesLength(line: UIView, lengthOffset: CGFloat) -> CGFloat {
-//        var totalLenghOfLine: CGFloat = lengthOffset
-//        var blockCountsOnLine: Int = 0
-//        
-//        blockOnBackLine = []
-//        blockOnFrontLine = []
-//
-//        for block in self.view.subviews {
-//            if block.isKindOfClass(UIButton) && line.frame.intersects(block.frame)
-//            {
-//                totalLenghOfLine += block.frame.width
-//                blockCountsOnLine += 1
-//                
-//                if line == frontLine {
-//                    blockOnFrontLine.append(block)
-//                    
-//                } else if line == backLine {
-//                    blockOnBackLine.append(block)
-//                }
-//            }
-//        }
-//        //print (blockOnFrontLine.count)
-//        let result: CGFloat = totalLenghOfLine + blockSpace * CGFloat(blockCountsOnLine)
-//        return result
-//    }
-    
-    func getLinesLength(line: UIView) -> CGFloat {
+    func getFrontLinesLength() -> CGFloat {
         var totalLengthOfFrontLine: CGFloat = 21
+        var result = CGFloat()
+        blockOnFrontLine = []
+        
+        let previousFrontLineLength = frontLineLength
+        
+        for block in self.view.subviews {
+            if block.isKindOfClass(UIButton) && frontLine.frame.intersects(block.frame)
+            {
+                totalLengthOfFrontLine += block.frame.width
+                blockOnFrontLine.append(block)
+            }
+        }
+            result = totalLengthOfFrontLine + blockSpace * CGFloat(blockOnFrontLine.count)
+            frontLineLength = result
+            frontLineChangedLength = frontLineLength - previousFrontLineLength
+        
+        return frontLineLength
+    }
+    
+    func getBackLinesLength() -> CGFloat {
         var totalLengthOfBackLine: CGFloat = 21
         var result = CGFloat()
-        //var blockCountsOnLine: Int = 0
-        blockOnFrontLine = []
+
         blockOnBackLine = []
         
         let previousBackLineLength = backLineLength
         
         for block in self.view.subviews {
-            if block.isKindOfClass(UIButton) && line.frame.intersects(block.frame) && line == frontLine
-            {
-                totalLengthOfFrontLine += block.frame.width
-                blockOnFrontLine.append(block)
-            }
-            
-            else if block.isKindOfClass(UIButton) && line.frame.intersects(block.frame) && line == backLine {
-                    totalLengthOfBackLine += block.frame.width
-                    blockOnBackLine.append(block)
+            if block.isKindOfClass(UIButton) && backLine.frame.intersects(block.frame) {
+                totalLengthOfBackLine += block.frame.width
+                blockOnBackLine.append(block)
             }
         }
-        
-        if line == frontLine {
-            result = totalLengthOfFrontLine + blockSpace * CGFloat(blockOnFrontLine.count)
-            frontLineLength = result
-            
-            return frontLineLength
-            
-        } else if line == backLine {
-            
+  
             result = totalLengthOfBackLine + blockSpace * CGFloat(blockOnBackLine.count)
             backLineLength = result
             backLineChangedLength = backLineLength - previousBackLineLength
-            return backLineLength
-        }
  
-        return result
+        return backLineLength
     }
     
     func getSingalPathLength() -> CGFloat {
@@ -656,8 +735,6 @@ class ViewController: UIViewController {
         var totalLenghOfBlocksForSecondPath: CGFloat = 40
         blockOnFirstPath = []
         blockOnSecondPath = []
-       // var blockCountsOnFirstPath: Int = 0
-        //var blockCountsOnSecondPath: Int = 0
         
         for block in self.view.subviews {
             // blocks on first Path
@@ -665,8 +742,7 @@ class ViewController: UIViewController {
             {
                 totalLenghOfBlocksForFirstPath += block.frame.width
                 blockOnFirstPath.append(block)
-               
-                //blockCountsOnFirstPath += 1
+
             }
                 
                 // blocks on the second Path
@@ -674,8 +750,7 @@ class ViewController: UIViewController {
             {
                 totalLenghOfBlocksForSecondPath += block.frame.width
                 blockOnSecondPath.append(block)
-               
-                //blockCountsOnSecondPath += 1
+
             }
             
         }
