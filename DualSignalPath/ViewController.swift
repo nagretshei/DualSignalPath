@@ -292,10 +292,52 @@ class ViewController: UIViewController {
             for block in self.view.subviews {
                 
                 if block.isKindOfClass(UIButton) && block.frame.width == blockWidth && block != button && button.frame.contains(block.center){
+//                    // 水平左右互換
+//                    if block.center.x < button.center.x && block.frame.contains(rightReferencePoint){
+//                        if blockDragedLength < 0 {
+//                            
+//                            UIView.animateWithDuration(0.2, delay: 0, options: .CurveLinear , animations: {
+//                                block.center = CGPoint(x: block.center.x + self.blockSpace + block.frame.width - 1, y: block.center.y)
+//                                
+//                                // if block.center
+//                                }, completion: nil)
+//                            putOutSideBlocksBackToSignalPath()
+//                            alignEverything()
+//                            
+//                        }
+//                            
+//                        else if blockDragedLength >= 0 {
+//                            UIView.animateWithDuration(0.2, delay: 0, options: .CurveLinear , animations: {
+//                                self.alignEverything()
+//                                }, completion: nil)
+//                        }
+//                    }
+//                        
+//                    else if block.center.x > button.center.x && block.frame.contains(leftReferencePoint){
+//                        
+//                        if blockDragedLength > 0  {
+//                            UIView.animateWithDuration(0.2, delay: 0, options: .CurveLinear , animations: {
+//                                block.center = CGPoint(x: block.center.x - self.blockSpace - block.frame.width + 1, y: block.center.y)
+//                                
+//                                //self.alignBlocks(button)
+//                                }, completion: nil)
+//                            putOutSideBlocksBackToSignalPath()
+//                            alignEverything()
+//                            
+//                        }
+//                        
+//                        else if blockDragedLength <= 0 {
+//                            UIView.animateWithDuration(0.2, delay: 0, options: .CurveLinear , animations: {
+//                                self.alignEverything()
+//                                }, completion: nil)
+//                        }
+//                        
+//                    }
+//
             
                     // 水平左右互換
                     if block.center.x < button.center.x && block.frame.contains(rightReferencePoint) && blockDragedLength < 0
-                        
+
                     {
                         UIView.animateWithDuration(0.2, delay: 0, options: .CurveLinear , animations: {
                             block.center = CGPoint(x: block.center.x + self.blockSpace + block.frame.width - 1, y: block.center.y)
@@ -327,20 +369,25 @@ class ViewController: UIViewController {
         else if totalChangedLength != 0
         {
             for block in self.view.subviews {
-                if block.isKindOfClass(UIButton) && block.frame.width == blockWidth && block != button && block.center.x >= button.center.x
+                if block.isKindOfClass(UIButton) && block.frame.width == blockWidth && block != button && block.center.x >= button.center.x {
                     
-                {  UIView.animateWithDuration(0.2, delay: 0, options: .CurveLinear , animations: {
+                
                     //self.alignArrayOfBlocks(blockOnFirstPath)
                     //self.alignEverything()
-                    if self.totalChangedLength > 0 {
-                        block.center.x += self.totalChangedLength
-                    } else if self.totalChangedLength < 0 {
+                    if totalChangedLength > 0 {
+                        UIView.animateWithDuration(0.2, delay: 0, options: .CurveLinear , animations: {
+                            block.center.x += self.totalChangedLength
+                            }, completion: nil)
+                        
+                    } else if totalChangedLength < 0 {
+                        UIView.animateWithDuration(0.4, delay: 0, options: .CurveLinear , animations: {
                         block.center.x += self.totalChangedLength + 1
                         self.alignEverything()
+                            }, completion: nil)
                         
                     }
                     
-                    }, completion: nil)
+                   
                 }
                 
             }
