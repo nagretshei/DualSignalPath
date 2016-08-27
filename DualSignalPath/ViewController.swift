@@ -14,6 +14,7 @@ class ViewController: UIViewController {
     var resetZone = UIView()
     var backLine = UIView()
     var backArrow = UILabel()
+    var demoBlock = UIButton()
     
     var blockCount: Int = 0
     var signalPathX: CGFloat = 162
@@ -53,6 +54,8 @@ class ViewController: UIViewController {
     var changedView = [UIView]()
     
     @IBAction func addBlock(sender: UIButton) {
+        demoBlock.removeFromSuperview()
+        
         let x = backLine.frame.origin.x + 10
         let y = backLine.center.y - 20
         addBlock(x, posY: y)
@@ -117,6 +120,14 @@ class ViewController: UIViewController {
         backArrow.text = "➤"
         backArrow.textColor = UIColor.lightGrayColor()
         view.addSubview(backArrow)
+        
+        let x = backLine.frame.origin.x + 10
+        let y = backLine.center.y - 20
+        demoBlock.frame = CGRectMake(x, y, blockWidth, 40)
+        demoBlock.backgroundColor = UIColor.clearColor()
+        view.addSubview(demoBlock)
+        alignEverything()
+        
     }
     
     func resetAllLinesLengthAndCulculatesBlocks(){
@@ -333,6 +344,7 @@ class ViewController: UIViewController {
                            // if block.center
                             }, completion: nil)
                         putOutSideBlocksBackToSignalPath()
+                        putOutSideBlocksBackToBackLine()
                         alignEverything()
                         
                     }
@@ -345,6 +357,7 @@ class ViewController: UIViewController {
                             //self.alignBlocks(button)
                             }, completion: nil)
                         putOutSideBlocksBackToSignalPath()
+                        putOutSideBlocksBackToBackLine()
                         alignEverything()
                         
                     }
