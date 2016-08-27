@@ -282,7 +282,7 @@ class ViewController: UIViewController {
     // Model
     func setBlocksRelativePositionToPath(button: UIButton){
         let buttonRightSideX: CGFloat = button.frame.origin.x + blockWidth
-        let accuracy : CGFloat = 5
+        let accuracy : CGFloat = 10
         let rightReferencePoint = CGPoint(x: buttonRightSideX - accuracy, y: button.center.y)
         let leftReferencePoint = CGPoint(x: button.frame.origin.x + accuracy, y: button.center.y)
         findLengthChangeOfLines()
@@ -298,47 +298,60 @@ class ViewController: UIViewController {
                         
                     {
                         UIView.animateWithDuration(0.2, delay: 0, options: .CurveLinear , animations: {
-                            block.center = CGPoint(x: block.center.x + self.blockSpace + block.frame.width, y: block.center.y)
+                            block.center = CGPoint(x: block.center.x + self.blockSpace + block.frame.width - 1, y: block.center.y)
                             
                            // if block.center
                             }, completion: nil)
                         putOutSideBlocksBackToSignalPath()
+                        alignEverything()
                         
                     }
                         
                     else if block.center.x > button.center.x && block.frame.contains(leftReferencePoint) && blockDragedLength > 0
                     {
                         UIView.animateWithDuration(0.2, delay: 0, options: .CurveLinear , animations: {
-                            block.center = CGPoint(x: block.center.x - self.blockSpace - block.frame.width, y: block.center.y)
+                            block.center = CGPoint(x: block.center.x - self.blockSpace - block.frame.width + 1, y: block.center.y)
                             
                             //self.alignBlocks(button)
                             }, completion: nil)
                         putOutSideBlocksBackToSignalPath()
+                        alignEverything()
+                        
                     }
-
                 }
             }
             
         }
         
+        // 垂直插入新方塊
         else if totalChangedLength != 0
         {
             for block in self.view.subviews {
                 if block.isKindOfClass(UIButton) && block.frame.width == blockWidth && block != button && block.center.x >= button.center.x
                     
                 {  UIView.animateWithDuration(0.2, delay: 0, options: .CurveLinear , animations: {
-                    block.center.x += self.totalChangedLength
+                    //self.alignArrayOfBlocks(blockOnFirstPath)
+                    //self.alignEverything()
+                    if self.totalChangedLength > 0 {
+                        block.center.x += self.totalChangedLength
+                    } else if self.totalChangedLength < 0 {
+                        block.center.x += self.totalChangedLength + 1
+                        self.alignEverything()
+                        
+                    }
                     
                     }, completion: nil)
                 }
                 
             }
+            
+            
+            // rearrange 2 path
         }
         
     }
     
     func putOutSideBlocksBackToSignalPath(){
-        print("GET IN")
         for block in self.view.subviews {
             
             if block.isKindOfClass(UIButton) && block.frame.width == blockWidth  {
@@ -347,7 +360,6 @@ class ViewController: UIViewController {
                     // on left side
                     if block.frame.origin.x < signalPath.frame.origin.x {
                         block.center.x = signalPath.frame.origin.x + 1
-                        print("TOP LEFT")
                         //getSingalPathLength()
                         resetAllLinesLengthAndCulculatesBlocks()
                         alignArrayOfBlocks(blockOnFirstPath)
@@ -358,7 +370,7 @@ class ViewController: UIViewController {
                         // on right side
                     else if block.frame.origin.x + block.frame.width > signalPath.frame.origin.x  + signalPath.frame.width {
                         block.center.x = signalPath.frame.origin.x + signalPath.frame.width - 1
-                        print("TOP Right")
+                   
                         //getSingalPathLength()
                         resetAllLinesLengthAndCulculatesBlocks()
                          alignArrayOfBlocks(blockOnFirstPath)
@@ -372,7 +384,7 @@ class ViewController: UIViewController {
                     if block.frame.origin.x < signalPath.frame.origin.x {
                         
                         block.center.x = signalPath.frame.origin.x + 1
-                        print("DOWN LEFT")
+              
                         //getSingalPathLength()
                         resetAllLinesLengthAndCulculatesBlocks()
                         alignArrayOfBlocks(blockOnSecondPath)
@@ -381,7 +393,7 @@ class ViewController: UIViewController {
                         // on right side
                     else if block.frame.origin.x + block.frame.width > signalPath.frame.origin.x  + signalPath.frame.width {
                         block.center.x = signalPath.frame.origin.x + signalPath.frame.width - 1
-                        print("DOWN RIGHT")
+              
                         //getSingalPathLength()
                         resetAllLinesLengthAndCulculatesBlocks()
                         alignArrayOfBlocks(blockOnSecondPath)
