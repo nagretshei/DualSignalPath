@@ -11,6 +11,7 @@ class ViewController: UIViewController {
     var frontLine = UIView()
     var signalPath = UIView()
     var hollow = UIView()
+    var resetZone = UIView()
     var backLine = UIView()
     var backArrow = UILabel()
     
@@ -80,8 +81,7 @@ class ViewController: UIViewController {
             touchPosition = touch.locationInView(view)
             deSelect(touchPosition)
             alignEverything()
-            
-            
+
         }
     }
     
@@ -107,6 +107,11 @@ class ViewController: UIViewController {
         hollow.frame = CGRectMake(3, 3, 34, 57)
         hollow.backgroundColor = UIColor.whiteColor()
         signalPath.addSubview(hollow)
+        
+        resetZone.frame = CGRectMake(3, 25, 34, 10)
+        resetZone.backgroundColor = UIColor.greenColor()
+        signalPath.addSubview(resetZone)
+        
         
         backLine.frame = CGRectMake(202, 100, 100, 3)
         backLine.backgroundColor = UIColor.grayColor()
@@ -145,6 +150,7 @@ class ViewController: UIViewController {
             
             self.signalPath.frame = CGRectMake(self.signalPathX, self.signalPath.frame.origin.y, self.getSingalPathLength(), 63)
             self.hollow.frame = CGRectMake(self.hollow.frame.origin.x , self.hollow.frame.origin.y, self.signalPathLength - CGFloat(6), 57)
+            self.resetZone.frame = CGRectMake(self.resetZone.frame.origin.x , self.resetZone.frame.origin.y, self.signalPathLength - CGFloat(6), 10)
             }, completion: nil)
         theEndOfSignalPathX = signalPathX + signalPath.frame.width
     }
@@ -258,19 +264,27 @@ class ViewController: UIViewController {
             setBlocksRelativePositionToPath(button)
             
             
-            if  button.center.y <= signalPath.frame.origin.y + signalPath.frame.height / 2
+            if  button.center.y < signalPath.frame.origin.y + signalPath.frame.height / 2 - resetZone.frame.height / 2
             {
                 UIView.animateWithDuration(0.2, delay: 0, options: .TransitionCurlUp , animations: {
                     self.alignArrayOfBlocks(self.blockOnSecondPath)
                     //self.putOutSideBlocksBackToSignalPath(button)
                     }, completion: nil)
                 
-            } else if button.center.y > signalPath.frame.origin.y + signalPath.frame.height / 2
+            } else if button.center.y > signalPath.frame.origin.y + signalPath.frame.height / 2 + resetZone.frame.height / 2
+
             {
                 UIView.animateWithDuration(0.2, delay: 0, options: .TransitionCurlUp , animations: {
                     self.alignArrayOfBlocks(self.blockOnFirstPath)
                     //self.putOutSideBlocksBackToSignalPath(button)
 
+                    }, completion: nil)
+                
+            }
+            else if  button.frame.intersects(resetZone.frame) {
+                UIView.animateWithDuration(0.2, delay: 0, options: .TransitionCurlUp , animations: {
+                   self.makeSignalPathsFlexible()
+                    
                     }, completion: nil)
                 
             }
@@ -292,49 +306,8 @@ class ViewController: UIViewController {
             for block in self.view.subviews {
                 
                 if block.isKindOfClass(UIButton) && block.frame.width == blockWidth && block != button && button.frame.contains(block.center){
-//                    // 水平左右互換
-//                    if block.center.x < button.center.x && block.frame.contains(rightReferencePoint){
-//                        if blockDragedLength < 0 {
-//                            
-//                            UIView.animateWithDuration(0.2, delay: 0, options: .CurveLinear , animations: {
-//                                block.center = CGPoint(x: block.center.x + self.blockSpace + block.frame.width - 1, y: block.center.y)
-//                                
-//                                // if block.center
-//                                }, completion: nil)
-//                            putOutSideBlocksBackToSignalPath()
-//                            alignEverything()
-//                            
-//                        }
-//                            
-//                        else if blockDragedLength >= 0 {
-//                            UIView.animateWithDuration(0.2, delay: 0, options: .CurveLinear , animations: {
-//                                self.alignEverything()
-//                                }, completion: nil)
-//                        }
-//                    }
-//                        
-//                    else if block.center.x > button.center.x && block.frame.contains(leftReferencePoint){
-//                        
-//                        if blockDragedLength > 0  {
-//                            UIView.animateWithDuration(0.2, delay: 0, options: .CurveLinear , animations: {
-//                                block.center = CGPoint(x: block.center.x - self.blockSpace - block.frame.width + 1, y: block.center.y)
-//                                
-//                                //self.alignBlocks(button)
-//                                }, completion: nil)
-//                            putOutSideBlocksBackToSignalPath()
-//                            alignEverything()
-//                            
-//                        }
-//                        
-//                        else if blockDragedLength <= 0 {
-//                            UIView.animateWithDuration(0.2, delay: 0, options: .CurveLinear , animations: {
-//                                self.alignEverything()
-//                                }, completion: nil)
-//                        }
-//                        
-//                    }
-//
-            
+                    
+                    
                     // 水平左右互換
                     if block.center.x < button.center.x && block.frame.contains(rightReferencePoint) && blockDragedLength < 0
 
@@ -360,6 +333,7 @@ class ViewController: UIViewController {
                         alignEverything()
                         
                     }
+                    
                 }
             }
             
@@ -474,7 +448,7 @@ class ViewController: UIViewController {
                     
                     orderedViews[i].1.center.x = orderedViews[0].1.center.x + CGFloat(i) * (blockWidth + blockSpace)
                     
-                    if orderedViews[i].1.center.y <= signalPath.frame.origin.y + signalPath.frame.height / 2
+                    if orderedViews[i].1.center.y < signalPath.frame.origin.y + signalPath.frame.height / 2
                     {
                         orderedViews[i].1.center.y = signalPath.frame.origin.y
                     } else if orderedViews[i].1.center.y > signalPath.frame.origin.y + signalPath.frame.height / 2
@@ -562,7 +536,7 @@ class ViewController: UIViewController {
         
         for block in self.view.subviews {
             // blocks on first Path
-            if block.isKindOfClass(UIButton) && signalPath.frame.intersects(block.frame) && block.center.y <= signalPath.frame.origin.y + signalPath.frame.height / 2
+            if block.isKindOfClass(UIButton) && signalPath.frame.intersects(block.frame) && block.center.y < signalPath.frame.origin.y + signalPath.frame.height / 2 - resetZone.frame.height / 2
             {
                 totalLenghOfBlocksForFirstPath += block.frame.width
                 blockOnFirstPath.append(block)
@@ -571,20 +545,28 @@ class ViewController: UIViewController {
             }
                 
                 // blocks on the second Path
-            else if block.isKindOfClass(UIButton) && signalPath.frame.intersects(block.frame) && block.center.y > signalPath.frame.origin.y + signalPath.frame.height / 2
+            else if block.isKindOfClass(UIButton) && signalPath.frame.intersects(block.frame) && block.center.y > signalPath.frame.origin.y + signalPath.frame.height / 2 + resetZone.frame.height / 2
             {
                 totalLenghOfBlocksForSecondPath += block.frame.width
                 blockOnSecondPath.append(block)
                
                 blockCountsOnSecondPath += 1
             }
+            
         }
         
         var result = CGFloat()
+//        if totalLenghOfBlocksForFirstPath >= totalLenghOfBlocksForSecondPath {
+//            result = totalLenghOfBlocksForFirstPath + blockSpace * CGFloat(blockCountsOnFirstPath)
+//        } else {
+//            result = totalLenghOfBlocksForSecondPath + blockSpace * CGFloat(blockCountsOnSecondPath)
+//        }
+        
+        
         if totalLenghOfBlocksForFirstPath >= totalLenghOfBlocksForSecondPath {
-            result = totalLenghOfBlocksForFirstPath + blockSpace * CGFloat(blockCountsOnFirstPath)
+            result = totalLenghOfBlocksForFirstPath + blockSpace * CGFloat(blockOnFirstPath.count)
         } else {
-            result = totalLenghOfBlocksForSecondPath + blockSpace * CGFloat(blockCountsOnSecondPath)
+            result = totalLenghOfBlocksForSecondPath + blockSpace * CGFloat(blockOnSecondPath.count)
         }
         
         signalPathLength = result
