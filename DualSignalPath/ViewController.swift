@@ -415,13 +415,18 @@ class ViewController: UIViewController {
                         else if backLineChangedLength < 0 && block.frame.intersects(backLine.frame) {
                             print("case 2-3-1")
                             
+                            
                             UIView.animateWithDuration(0.4, delay: 0, options: .CurveLinear , animations: {
                                 block.center.x += self.backLineChangedLength + 1
-                                //self.putOutSideBlocksBackToFrontkLine()
-                                self.putOutSideBlocksBackToBackLine()
-                                self.alignEverything()
+                                
                                 }, completion: nil)
                             
+                            self.getFrontLinesLength()
+                             UIView.animateWithDuration(0.4, delay: 0, options: .CurveLinear , animations: {
+
+                            self.putOutSideBlocksBackToBackLine()
+                            self.alignEverything()
+                            }, completion: nil)
                         }
 //                            else if frontLineChangedLength < 0 && block.frame.intersects(frontLine.frame) {
 //                            print("case 2-3-2")
@@ -703,6 +708,7 @@ class ViewController: UIViewController {
         }
             result = totalLengthOfFrontLine + blockSpace * CGFloat(blockOnFrontLine.count)
             frontLineLength = result
+            print(blockOnFrontLine.count)
             frontLineChangedLength = frontLineLength - previousFrontLineLength
         
         return frontLineLength
