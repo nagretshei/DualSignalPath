@@ -400,21 +400,26 @@ class ViewController: UIViewController {
                         
                     } else if totalChangedLength < 0 {
                         
-                        if frontLineChangedLength < 0 && block.frame.intersects(frontLine.frame) {
-                            print("case 2-3-2")
-                            
+                        print (blockOnFrontLine.count)
+                        print (frontLineChangedLength)
+                        print (signalPathChangedLength)
+                        print (backLineChangedLength)
+                        
+                        
+                        if frontLineChangedLength < 0 {
+                           print("case 2-3-1")
+                           
                             UIView.animateWithDuration(0.4, delay: 0, options: .CurveLinear , animations: {
                                 block.center.x += self.frontLineChangedLength + 1
                                 self.putOutSideBlocksBackToFrontkLine()
                                 //self.putOutSideBlocksBackToBackLine()
                                 self.alignEverything()
                                 }, completion: nil)
-                            //
+                            
                         }
                         
                         else if backLineChangedLength < 0 && block.frame.intersects(backLine.frame) {
-                            print("case 2-3-1")
-                            
+                            print("case 2-3-2")
                             
                             UIView.animateWithDuration(0.4, delay: 0, options: .CurveLinear , animations: {
                                 block.center.x += self.backLineChangedLength + 1
@@ -517,22 +522,31 @@ class ViewController: UIViewController {
                 
                 if block.center.y == frontLine.center.y {
                     // on right side
-                    
-                    if block.frame.origin.x > frontLine.frame.origin.x + frontLine.frame.width && block.frame.origin.x + block.frame.width < signalPath.center.x {
+                    //&& block.frame.origin.x + block.frame.width < signalPath.center.x
+                    if block.frame.origin.x > frontLine.frame.origin.x + frontLine.frame.width  {
+                        
+                        print ("right side")
                         block.center.x = frontLine.frame.origin.x + frontLine.frame.width - 1
                         
                         resetAllLinesLengthAndCulculatesBlocks()
                         alignArrayOfBlocks(blockOnFrontLine)
                     }
                 
-     
+                        // on left side
+                       
                     else if rightSide < frontLine.frame.origin.x  {
-                            
+                             print ("left side")
                             block.center.x = backLine.frame.origin.x + 1
                             resetAllLinesLengthAndCulculatesBlocks()
                             alignArrayOfBlocks(blockOnFrontLine)
                         
                     }
+//                    else {print("not sure")
+//                        print (block.frame.origin.x)
+//                        print (rightSide)
+//                        print (frontLine.frame.origin.x)
+//                    
+//                    }
                 }
             }
         }
